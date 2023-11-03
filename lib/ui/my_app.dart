@@ -1,3 +1,5 @@
+import 'package:f_chat_template/domain/use_case/locator_service.dart';
+import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'controllers/authentication_controller.dart';
@@ -13,10 +15,12 @@ class MyApp extends StatelessWidget {
     Get.put(ChatController());
     Get.put(AuthenticationController());
     Get.put(UserController());
+    Get.put(LocatorService());
+    Get.put(LocationController());
 
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Firebase demo',
+        title: 'Chat App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

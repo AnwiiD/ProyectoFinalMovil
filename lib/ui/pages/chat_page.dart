@@ -1,7 +1,8 @@
+import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
-
 import '../../data/model/message.dart';
 import '../controllers/authentication_controller.dart';
 import '../controllers/chat_controller.dart';
@@ -9,7 +10,6 @@ import '../controllers/chat_controller.dart';
 // Widget con la interfaz del chat
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
-
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
@@ -28,7 +28,7 @@ class _ChatPageState extends State<ChatPage> {
   // obtenemos las instancias de los controladores
   ChatController chatController = Get.find();
   AuthenticationController authenticationController = Get.find();
-
+  LocationController locationController = Get.find();
   @override
   void initState() {
     super.initState();
@@ -131,6 +131,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
     return Scaffold(
         appBar: AppBar(title: Text("Chat with $remoteEmail")),

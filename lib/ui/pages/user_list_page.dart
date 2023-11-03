@@ -47,6 +47,11 @@ class _UserListPageState extends State<UserListPage> {
     // Widget usado en la lista de los usuarios
     // mostramos el correo y uid
     return Card(
+      elevation: 5.0, // Add elevation for a shadow effect
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0), // Set the border radius
+      ),
+      color: Colors.lightBlueAccent,
       margin: const EdgeInsets.all(4.0),
       child: ListTile(
         onTap: () {
@@ -63,7 +68,7 @@ class _UserListPageState extends State<UserListPage> {
     );
   }
 
-  Widget _list() {
+  Widget chatList() {
     // Un widget con La lista de los usuarios con una validación para cuándo la misma este vacia
     // la lista de usuarios la obtenemos del userController
     return GetX<UserController>(builder: (controller) {
@@ -82,26 +87,45 @@ class _UserListPageState extends State<UserListPage> {
     });
   }
 
+  Widget groupList() {
+    // Un widget con La lista de los usuarios con una validación para cuándo la misma este vacia
+    // la lista de usuarios la obtenemos del userController
+    return GetX<UserController>(builder: (controller) {
+      if (userController.users.length == 0) {
+        return const Center(
+          child: Text('No groups'),
+        );
+      }
+      return ListView.builder(
+        itemCount: userController.users.length,
+        itemBuilder: (context, index) {
+          var element = userController.users[index];
+          return _item(element);
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Chat App ${authenticationController.userEmail()}"),
-          actions: [
-            // botón para crear unos chats para arrancar el demo
-            IconButton(
-                onPressed: () {
-                  chatController.initializeChats();
-                },
-                icon: const Icon(Icons.play_circle_outlined)),
-            // botón para cerrar la sesión con el usuario
-            IconButton(
-                icon: const Icon(Icons.exit_to_app),
-                onPressed: () {
-                  _logout();
-                }),
-          ],
-        ),
-        body: _list());
+    return DefaultTabController(
+        length: 2, // Number of selectable sections
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Bienvenido ${authenticationController.userEmail()}'),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'Chats', icon: Icon(Icons.chat)),
+                Tab(text: 'Grupos', icon: Icon(Icons.group)),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              Center(child: chatList()),
+              Center(child: groupList()),
+            ],
+          ),
+        ));
   }
 }
