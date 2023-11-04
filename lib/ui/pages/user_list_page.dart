@@ -1,4 +1,6 @@
+import 'package:f_chat_template/data/model/app_group.dart';
 import 'package:f_chat_template/ui/controllers/chat_controller.dart';
+import 'package:f_chat_template/ui/controllers/group_controller.dart';
 import 'package:f_chat_template/ui/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,16 +19,19 @@ class UserListPage extends StatefulWidget {
 
 class _UserListPageState extends State<UserListPage>
     with SingleTickerProviderStateMixin {
-  // obtenemos la instancia de los controladores
   AuthenticationController authenticationController = Get.find();
   ChatController chatController = Get.find();
   UserController userController = Get.find();
+  GroupController groupController = Get.find();
+
+  TextEditingController groupNameController = TextEditingController();
   late TabController _tabController;
 
   @override
   void initState() {
     // le decimos al userController que se suscriba a los streams
     userController.start();
+    groupController.start();
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -46,7 +51,29 @@ class _UserListPageState extends State<UserListPage>
     }
   }
 
-  Widget _item(AppUser element) {
+  Widget _group(AppGroup element) {
+    // Widget usado en la lista de los usuarios
+    // mostramos el correo y uid
+    return Card(
+      elevation: 5.0, // Add elevation for a shadow effect
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0), // Set the border radius
+      ),
+      color: Colors.lightBlueAccent,
+      margin: const EdgeInsets.all(4.0),
+      child: ListTile(
+        onTap: () {
+          _joinGroupDialog(context, element);
+        },
+        title: Text(
+          element.name,
+        ),
+        subtitle: Text(element.users.toString()),
+      ),
+    );
+  }
+
+  Widget _chat(AppUser element) {
     // Widget usado en la lista de los usuarios
     // mostramos el correo y uid
     return Card(
@@ -84,7 +111,7 @@ class _UserListPageState extends State<UserListPage>
         itemCount: userController.users.length,
         itemBuilder: (context, index) {
           var element = userController.users[index];
-          return _item(element);
+          return _chat(element);
         },
       );
     });
@@ -93,17 +120,17 @@ class _UserListPageState extends State<UserListPage>
   Widget groupList() {
     // Un widget con La lista de los usuarios con una validación para cuándo la misma este vacia
     // la lista de usuarios la obtenemos del userController
-    return GetX<UserController>(builder: (controller) {
-      if (userController.users.length == 0) {
+    return GetX<GroupController>(builder: (controller) {
+      if (groupController.groups.length == 0) {
         return const Center(
           child: Text('No groups'),
         );
       }
       return ListView.builder(
-        itemCount: userController.users.length,
+        itemCount: groupController.groups.length,
         itemBuilder: (context, index) {
-          var element = userController.users[index];
-          return _item(element);
+          var element = groupController.groups[index];
+          return _group(element);
         },
       );
     });
@@ -111,60 +138,128 @@ class _UserListPageState extends State<UserListPage>
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 2, // Number of selectable sections
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('Bienvenido ${authenticationController.userEmail()}'),
-            actions: [
-              Row(children: [
-                Text('Cerrar sesión'),
-                IconButton(
-                  icon: Icon(Icons.logout),
-                  onPressed: () {
-                    authenticationController.logout();
-                  },
-                ),
-              ])
-            ],
-            bottom: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(text: 'Chats', icon: Icon(Icons.chat)),
-                Tab(text: 'Grupos', icon: Icon(Icons.group)),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Bienvenido ${authenticationController.userEmail()}'),
+        actions: [
+          Row(children: [
+            const Text('Cerrar sesión'),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                _logout();
+              },
             ),
+          ])
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Chats', icon: Icon(Icons.chat)),
+            Tab(text: 'Grupos', icon: Icon(Icons.group)),
+          ],
+        ),
+      ),
+      body: DefaultTabController(
+        length: 2,
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            Scaffold(
+              body: Center(child: chatList()),
+              floatingActionButton: _buildFloatingActionButton(0, context),
+            ),
+            Scaffold(
+              body: Center(child: groupList()),
+              floatingActionButton: _buildFloatingActionButton(1, context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _joinGroupDialog(BuildContext context, element) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('¿Unirse a este Grupo: ${element.name}?'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                joinGroup(element.gid);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Unirse al grupo'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _createGroupDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¿Crear Grupo?'),
+          content: TextField(
+            controller: groupNameController,
           ),
-          body: TabBarView(
-            children: [
-              Center(child: chatList()),
-              Center(child: groupList()),
-            ],
-          ),
-          floatingActionButton:
-              _buildFloatingActionButton(_tabController.index),
-        ));
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                String inputText = groupNameController.text;
+                var groupid = await groupController.createGroup(inputText);
+                authenticationController.joinGroup(groupid);
+              },
+              child: const Text('Crear Grupo'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void newGroup(context) {
+    _createGroupDialog(context);
+  }
+
+  Widget _buildFloatingActionButton(int tabIndex, context) {
+    if (tabIndex == 0) {
+      return FloatingActionButton(
+        onPressed: () {
+          logInfo("buttonPressed");
+        },
+        child: const Icon(Icons.chat),
+      );
+    } else {
+      return FloatingActionButton(
+        onPressed: () {
+          logInfo("banca grupo");
+          newGroup(context);
+        },
+        child: const Icon(Icons.add),
+      );
+    }
+  }
+
+  void joinGroup(group) {
+    authenticationController.joinGroup(group);
   }
 }
-
-Widget _buildFloatingActionButton(int tabIndex) {
-  if (tabIndex == 0) {
-    return FloatingActionButton(
-      onPressed: () {
-        newChat();
-      },
-      child: Icon(Icons.chat),
-    );
-  } else {
-    return FloatingActionButton(
-      onPressed: () {
-        newGroup();
-      },
-      child: Icon(Icons.add),
-    );
-  }
-}
-
-void newChat() {}
-
-void newGroup() {}

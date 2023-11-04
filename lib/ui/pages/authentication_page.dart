@@ -91,7 +91,7 @@ class AuthenticationPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 const Text(
-                                  '¿Aún no tienes una cuenta? Inicia sesión aquí',
+                                  '¿Aún no tienes una cuenta? Registrate aquí',
                                   style: TextStyle(
                                       color: Colors.blueAccent,
                                       fontWeight: FontWeight.bold,

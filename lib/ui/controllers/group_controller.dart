@@ -3,10 +3,9 @@ import 'package:f_chat_template/data/model/app_group.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
-import 'authentication_controller.dart';
 
 // Controlador usado para manejar los usuarios del chat
-class UserController extends GetxController {
+class GroupController extends GetxController {
   // lista en la que se almacenan los uaurios, la misma es observada por la UI
   var _groups = <AppGroup>[].obs;
 
@@ -19,14 +18,9 @@ class UserController extends GetxController {
   // devolvemos a la UI todos los usuarios excepto el que está logeado en el sistema
   // esa lista será usada para la pantalla en la que listan los usuarios con los que se
   // puede comenzar una conversación
-  get users {
-    AuthenticationController authenticationController = Get.find();
-    return _groups
-        .where((entry) => entry.uid != authenticationController.getUid())
-        .toList();
+  get groups {
+    return _groups.toList();
   }
-
-  get allGroups => _groups;
 
   // método para comenzar a escuchar cambios en la "tabla" userList de la base de
   // datos
@@ -60,34 +54,20 @@ class UserController extends GetxController {
     });
 
     final json = event.snapshot.value as Map<dynamic, dynamic>;
-    _groups[_groups.indexOf(oldEntry)] = AppGroup.fromJson(event.snapshot, json);
+    _groups[_groups.indexOf(oldEntry)] =
+        AppGroup.fromJson(event.snapshot, json);
   }
 
   // método para crear un nuevo usuario
-  Future<void> createGroup(name, uid) async {
-    logInfo("Creating group in realTime for $name and $uid");
+  Future createGroup(name) async {
+    logInfo("Creating group in realTime for $name");
     try {
-      await databaseRef
-          .child('groupList')
-          .push()
-          .set({'name': name, 'uid': uid});
+      DatabaseReference gid = databaseRef.child('groupList').push();
+      await gid.set({'name': name, 'gid': gid.key});
+      return Future.value(gid.key);
     } catch (error) {
       logError(error);
       return Future.error(error);
     }
-  }
-
-  Future<void> joinGroup(user,uid)async{
-    logInfo("Adding to group in realTime for $user and $uid");
-    try {
-      await databaseRef
-          .child('groupList')
-          .push()
-          .set({'name': user, 'uid': uid});
-    } catch (error) {
-      logError(error);
-      return Future.error(error);
-    }
-
   }
 }

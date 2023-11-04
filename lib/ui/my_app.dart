@@ -1,4 +1,5 @@
 import 'package:f_chat_template/domain/use_case/locator_service.dart';
+import 'package:f_chat_template/ui/controllers/group_controller.dart';
 import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     Get.put(UserController());
     Get.put(LocatorService());
     Get.put(LocationController());
+    Get.put(GroupController());
 
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,

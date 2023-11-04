@@ -1,12 +1,17 @@
 import 'package:f_chat_template/ui/controllers/authentication_controller.dart';
+import 'package:f_chat_template/ui/pages/authentication_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loggy/loggy.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({Key? key}) : super(key: key);
   final AuthenticationController authenticationController = Get.find();
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController emailController =
+      TextEditingController(text: "a@a.com");
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController passwordCheckController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +32,7 @@ class SignUpPage extends StatelessWidget {
                         borderRadius:
                             const BorderRadius.all(Radius.circular(10))),
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextField(
                             controller: emailController,
@@ -35,19 +40,14 @@ class SignUpPage extends StatelessWidget {
                                 labelText: 'Correo Electrónico'),
                           ),
                           TextField(
-                            controller: emailController,
-                            decoration: const InputDecoration(
-                                labelText: 'Número telefónico'),
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
                             controller: passwordController,
+                            keyboardType: TextInputType.number,
                             obscureText: true,
                             decoration:
                                 const InputDecoration(labelText: 'Contraseña'),
                           ),
                           TextField(
-                            controller: passwordController,
+                            controller: passwordCheckController,
                             obscureText: true,
                             decoration: const InputDecoration(
                                 labelText: 'Confirmar contraseña'),
@@ -55,8 +55,39 @@ class SignUpPage extends StatelessWidget {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              signup(emailController.text,
-                                  passwordController.text);
+                              if (passwordController.text == "" ||
+                                  emailController.text == "") {
+                                Get.snackbar(
+                                  "Sign Up Error",
+                                  'Todos los campos son obligatorios',
+                                  icon: const Icon(Icons.person,
+                                      color: Colors.red),
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              } else if (!emailController.text
+                                  .endsWith(".com")) {
+                                Get.snackbar(
+                                  "Sign Up Error",
+                                  'Dirección de correo inválida',
+                                  icon: const Icon(Icons.person,
+                                      color: Colors.red),
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              } else {
+                                if (passwordController.text ==
+                                    passwordCheckController.text) {
+                                  signup(emailController.text,
+                                      passwordController.text);
+                                } else {
+                                  Get.snackbar(
+                                    "Sign Up Error",
+                                    'Las contraseñas no coinciden',
+                                    icon: const Icon(Icons.person,
+                                        color: Colors.red),
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                }
+                              }
                             },
                             child: const Text('Crear Cuenta'),
                           ),
@@ -67,11 +98,33 @@ class SignUpPage extends StatelessWidget {
             ]))));
   }
 
-  void signup(String email, String password) {
+  void signup(String email, String password) async {
     try {
-      authenticationController.signup(email, password);
+      await authenticationController.signup(email, password);
+      Get.snackbar(
+        "Sign Up",
+        'Usuario creado correctamente',
+        icon: const Icon(Icons.person, color: Colors.green),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      logInfo("Success sign up");
+      Get.to(AuthenticationPage());
     } catch (error) {
-      
+      if (error == 'The password is too weak') {
+        Get.snackbar(
+          "Sign Up Error",
+          'Contraseña muy corta',
+          icon: const Icon(Icons.person, color: Colors.red),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          "Sign Up Error",
+          'Usuario ya en uso',
+          icon: const Icon(Icons.person, color: Colors.red),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     }
   }
 }

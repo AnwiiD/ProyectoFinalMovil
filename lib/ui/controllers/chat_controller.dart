@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'package:f_chat_template/data/model/app_user.dart';
 import 'package:f_chat_template/ui/controllers/authentication_controller.dart';
-import 'package:f_chat_template/ui/controllers/user_controller.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
@@ -36,17 +34,11 @@ class ChatController extends GetxController {
 
     updateEntryStreamSubscription =
         databaseReference.child("msg").child(chatKey).onChildChanged.listen(_onEntryChanged);
-    // TODO
-    // newEntryStreamSubscription = databaseReference - child msg - child chatKey - listen
-
-    // TODO
-    //  updateEntryStreamSubscription = databaseReference - child msg - child chatKey - listen
   }
 
   // método en el que cerramos los streams
   void unsubscribe() {
-    //TODO
-    // cancelar las subscripciones a los streams
+
     newEntryStreamSubscription.cancel();
     updateEntryStreamSubscription.cancel();
 
@@ -100,8 +92,6 @@ class ChatController extends GetxController {
     String senderUid = authenticationController.getUid();
     try {
       databaseReference.child('msg').child(key).push().set({'senderUid': senderUid, 'msg': msg});
-      // TODO
-      // databaseReference - child('msg') - child(key) - push() - set({'senderUid': senderUid, 'msg': msg})
     } catch (error) {
       logError(error);
       return Future.error(error);
@@ -110,14 +100,4 @@ class ChatController extends GetxController {
 
   // en esté método creamos chats inicialies con los que podemos probar la lectura
   // de mensajes
-  void initializeChats() {
-    UserController userController = Get.find();
-    List<AppUser> users = userController.allUsers();
-    createChat(users[0].uid, users[1].uid, users[0].uid, "Hola B, soy A");
-    createChat(users[1].uid, users[0].uid, users[1].uid, "Hola A, cómo estás?");
-    createChat(users[0].uid, users[2].uid, users[0].uid, "Hola C, soy A");
-    createChat(users[0].uid, users[2].uid, users[2].uid, "Hola A, Cómo estás?");
-    createChat(users[1].uid, users[2].uid, users[1].uid, "Hola C, soy B");
-    createChat(users[2].uid, users[1].uid, users[2].uid, "Todo bien B");
-  }
 }

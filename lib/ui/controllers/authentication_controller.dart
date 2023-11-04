@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
+import 'package:loggy/loggy.dart';
 import 'user_controller.dart';
 
 // este controlador esconde los detalles de la implementación de firebase
@@ -61,5 +62,21 @@ class AuthenticationController extends GetxController {
   String getUid() {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     return uid;
+  }
+
+  Future<void> joinGroup(group) async {
+    logInfo(
+        "Adding user to group in realTime for ${userEmail()} and ${getUid()}");
+    try {
+      await databaseReference
+          .child('groupList')
+          .child(group)
+          .child('users')
+          .child(getUid())
+          .set({'email': userEmail(), 'uid': getUid()});
+    } catch (error) {
+      logError(error);
+      return Future.error(error);
+    }
   }
 }
