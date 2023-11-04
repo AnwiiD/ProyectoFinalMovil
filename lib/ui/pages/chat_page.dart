@@ -1,6 +1,5 @@
 import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 import '../../data/model/message.dart';

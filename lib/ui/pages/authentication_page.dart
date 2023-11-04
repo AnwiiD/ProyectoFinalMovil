@@ -48,6 +48,7 @@ class AuthenticationPage extends StatelessWidget {
                           color: Colors.blue.shade100,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10))),
+                      child: Padding(padding: EdgeInsets.all(20.0),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
@@ -73,7 +74,7 @@ class AuthenticationPage extends StatelessWidget {
                               },
                               child: const Text('Iniciar Sesión'),
                             ),
-                          ]),
+                          ]),)
                     ),
                   ),
                 ),

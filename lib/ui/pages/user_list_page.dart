@@ -15,17 +15,20 @@ class UserListPage extends StatefulWidget {
   State<UserListPage> createState() => _UserListPageState();
 }
 
-class _UserListPageState extends State<UserListPage> {
+class _UserListPageState extends State<UserListPage>
+    with SingleTickerProviderStateMixin {
   // obtenemos la instancia de los controladores
   AuthenticationController authenticationController = Get.find();
   ChatController chatController = Get.find();
   UserController userController = Get.find();
+  late TabController _tabController;
 
   @override
   void initState() {
     // le decimos al userController que se suscriba a los streams
     userController.start();
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -113,8 +116,20 @@ class _UserListPageState extends State<UserListPage> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Bienvenido ${authenticationController.userEmail()}'),
-            bottom: const TabBar(
-              tabs: [
+            actions: [
+              Row(children: [
+                Text('Cerrar sesión'),
+                IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () {
+                    authenticationController.logout();
+                  },
+                ),
+              ])
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const [
                 Tab(text: 'Chats', icon: Icon(Icons.chat)),
                 Tab(text: 'Grupos', icon: Icon(Icons.group)),
               ],
@@ -126,6 +141,30 @@ class _UserListPageState extends State<UserListPage> {
               Center(child: groupList()),
             ],
           ),
+          floatingActionButton:
+              _buildFloatingActionButton(_tabController.index),
         ));
   }
 }
+
+Widget _buildFloatingActionButton(int tabIndex) {
+  if (tabIndex == 0) {
+    return FloatingActionButton(
+      onPressed: () {
+        newChat();
+      },
+      child: Icon(Icons.chat),
+    );
+  } else {
+    return FloatingActionButton(
+      onPressed: () {
+        newGroup();
+      },
+      child: Icon(Icons.add),
+    );
+  }
+}
+
+void newChat() {}
+
+void newGroup() {}
