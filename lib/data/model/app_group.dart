@@ -12,7 +12,7 @@ class AppGroup {
       : key = snapshot.key ?? "0",
         name = json['name'] ?? "somename",
         gid = json['gid'] ?? "gid",
-        users = json['users'] ?? [];
+        users = json['users'] ?? {};
 
   toJson() {
     return {
