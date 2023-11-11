@@ -66,7 +66,13 @@ class _UserListPageState extends State<UserListPage>
       margin: const EdgeInsets.all(4.0),
       child: ListTile(
         onTap: () {
-          _joinGroupDialog(context, element);
+          if (_userInGroup(element)) {
+            Get.to(ChatPage(), arguments: [
+            authenticationController.getUid(),
+            authenticationController.userEmail(),]);
+          } else {
+            _joinGroupDialog(context, element);
+          }
         },
         title: Text(
           element.name,
@@ -194,7 +200,7 @@ class _UserListPageState extends State<UserListPage>
           actions: <Widget>[
             ElevatedButton(
               onPressed: () {
-                joinGroup(element.gid);
+                authenticationController.joinGroup(element.gid);
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: const Text('Unirse al grupo'),
@@ -242,10 +248,6 @@ class _UserListPageState extends State<UserListPage>
     );
   }
 
-  void newGroup(context) {
-    _createGroupDialog(context);
-  }
-
   Widget _buildFloatingActionButton(int tabIndex, context) {
     if (tabIndex == 0) {
       return FloatingActionButton(
@@ -258,14 +260,20 @@ class _UserListPageState extends State<UserListPage>
       return FloatingActionButton(
         onPressed: () {
           logInfo("banca grupo");
-          newGroup(context);
+          _createGroupDialog(context);
         },
         child: const Icon(Icons.add),
       );
     }
   }
 
-  void joinGroup(group) {
-    authenticationController.joinGroup(group);
+  bool _userInGroup(AppGroup element) {
+    var user = authenticationController.getUid();
+    for (var users in element.users.keys) {
+      if (users == user) {
+        return true;
+      }
+    }
+    return false;
   }
 }

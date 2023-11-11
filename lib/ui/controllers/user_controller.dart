@@ -48,6 +48,7 @@ class UserController extends GetxController {
 
   // cuando obtenemos un evento con un nuevo usuario lo agregamos a _users
   _onEntryAdded(DatabaseEvent event) {
+    //logInfo(event.snapshot.value);
     final json = event.snapshot.value as Map<dynamic, dynamic>;
     _users.add(AppUser.fromJson(event.snapshot, json));
   }
@@ -76,4 +77,5 @@ class UserController extends GetxController {
       return Future.error(error);
     }
   }
+
 }

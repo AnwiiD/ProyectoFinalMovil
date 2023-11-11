@@ -49,6 +49,7 @@ class GroupController extends GetxController {
   // cuando obtenemos un evento con un usuario modificado lo reemplazamos en _users
   // usando el key como llave
   _onEntryChanged(DatabaseEvent event) {
+    logInfo("group changed ");
     var oldEntry = _groups.singleWhere((entry) {
       return entry.key == event.snapshot.key;
     });
