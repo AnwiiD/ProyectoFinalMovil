@@ -11,7 +11,6 @@ import 'firebase_cental.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     Get.put(ChatController());
@@ -21,13 +20,12 @@ class MyApp extends StatelessWidget {
     Get.put(LocationController());
     Get.put(GroupController());
     Get.put(ConnectionController());
-
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Chat App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const FirebaseCentral());
+        home: FirebaseCentral());
   }
 }

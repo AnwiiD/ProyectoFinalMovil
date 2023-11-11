@@ -17,7 +17,6 @@ Future<List<Box>> _openBox() async {
 
 Future<void> main() async {
   // this is the key
-
   WidgetsFlutterBinding.ensureInitialized();
   await _openBox();
   Loggy.initLoggy(

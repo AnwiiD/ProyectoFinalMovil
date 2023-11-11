@@ -6,6 +6,7 @@ part "local_message.g.dart";
 
 @HiveType(typeId: 0)
 class LocalMessage extends HiveObject {
+  @override
   @HiveField(0)
   String key;
   @HiveField(1)

@@ -67,7 +67,7 @@ class _UserListPageState extends State<UserListPage>
       child: ListTile(
         onTap: () {
           if (_userInGroup(element)) {
-            Get.to(ChatPage(), arguments: [
+            Get.to(const ChatPage(), arguments: [
             authenticationController.getUid(),
             authenticationController.userEmail(),]);
           } else {

@@ -1,18 +1,22 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 
 class ConnectionController extends GetxController {
+  Connectivity connectivity = Connectivity();
+  Rx<ConnectivityResult> connected = ConnectivityResult.none.obs;
+  late StreamSubscription<ConnectivityResult> conSubs;
 
-Connectivity connectivity = Connectivity();
-
-Rx<ConnectivityResult> connected = ConnectivityResult.none.obs;
-
-void initState() {
-  logInfo("Listening to connection...");
-  connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-    connected.value =  result;
-  });
-}
-
+  @override
+  Future<void> onInit() async {
+    logInfo("First connection...");
+    connected.value = await connectivity.checkConnectivity();
+    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      logInfo("Connection Changed");
+      connected.value = result;
+    });
+    super.onInit();
+  }
 }
