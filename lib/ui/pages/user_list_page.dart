@@ -1,5 +1,7 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:f_chat_template/data/model/app_group.dart';
 import 'package:f_chat_template/ui/controllers/chat_controller.dart';
+import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/group_controller.dart';
 import 'package:f_chat_template/ui/pages/chat_page.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,7 @@ class _UserListPageState extends State<UserListPage>
   ChatController chatController = Get.find();
   UserController userController = Get.find();
   GroupController groupController = Get.find();
+  ConnectionController connectionController = Get.find();
 
   TextEditingController groupNameController = TextEditingController();
   late TabController _tabController;
@@ -140,6 +143,9 @@ class _UserListPageState extends State<UserListPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: connectionController.connected.value == ConnectivityResult.none
+            ? Colors.red
+            : Colors.green,
         title: Text('Bienvenido ${authenticationController.userEmail()}'),
         actions: [
           Row(children: [
