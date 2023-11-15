@@ -1,3 +1,5 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,6 +13,7 @@ import '../controllers/authentication_controller.dart';
 class AuthenticationPage extends StatelessWidget {
   AuthenticationPage({Key? key}) : super(key: key);
   final AuthenticationController authenticationController = Get.find();
+  final ConnectionController connectionController = Get.find();
 
   void login(String user, String password) async{
     try {
@@ -62,7 +65,11 @@ class AuthenticationPage extends StatelessWidget {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(10))),
                         child: Padding(
+<<<<<<< HEAD
                           padding: EdgeInsets.all(20.0),
+=======
+                          padding: const EdgeInsets.all(20.0),
+>>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -88,6 +95,15 @@ class AuthenticationPage extends StatelessWidget {
                                   },
                                   child: const Text('Iniciar Sesión'),
                                 ),
+<<<<<<< HEAD
+=======
+                                Obx(() => Text(
+                                      connectionController.connected.value ==
+                                              ConnectivityResult.none
+                                          ? "No Connection"
+                                          : "Connected to ${connectionController.connected.value.name}",
+                                    ))
+>>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
                               ]),
                         )),
                   ),
@@ -113,7 +129,7 @@ class AuthenticationPage extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    Get.to(SignUpPage());
+                                    Get.to(()=>SignUpPage());
                                   },
                                   child: const Text('Crear Cuenta'),
                                 ),

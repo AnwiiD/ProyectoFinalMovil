@@ -1,5 +1,7 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:f_chat_template/data/model/app_group.dart';
 import 'package:f_chat_template/ui/controllers/chat_controller.dart';
+import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/group_controller.dart';
 import 'package:f_chat_template/ui/pages/chat_page.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class _UserListPageState extends State<UserListPage>
   ChatController chatController = Get.find();
   UserController userController = Get.find();
   GroupController groupController = Get.find();
+  ConnectionController connectionController = Get.find();
 
   TextEditingController groupNameController = TextEditingController();
   late TabController _tabController;
@@ -65,7 +68,11 @@ class _UserListPageState extends State<UserListPage>
       child: ListTile(
         onTap: () {
           if (_userInGroup(element)) {
+<<<<<<< HEAD
             Get.to(ChatGroupPage(), arguments: [
+=======
+            Get.to(const ChatPage(), arguments: [
+>>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
             authenticationController.getUid(),
             element.gid,
             element.name]);
@@ -148,7 +155,14 @@ class _UserListPageState extends State<UserListPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+<<<<<<< HEAD
         title: Text('Bienvenido ${getName()}'),
+=======
+        backgroundColor: connectionController.connected.value == ConnectivityResult.none
+            ? Colors.red
+            : Colors.green,
+        title: Text('Bienvenido ${authenticationController.userEmail()}'),
+>>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
         actions: [
           Row(children: [
             const Text('Cerrar sesión'),

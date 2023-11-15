@@ -1,8 +1,6 @@
 import 'package:f_chat_template/ui/controllers/authentication_controller.dart';
-import 'package:f_chat_template/ui/pages/authentication_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:loggy/loggy.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({Key? key}) : super(key: key);
@@ -106,15 +104,18 @@ class SignUpPage extends StatelessWidget {
 
   void signup(String email, String password, String name) async {
     try {
+<<<<<<< HEAD
       await authenticationController.signup(email, password, name);
+=======
+      Get.back();
+      await authenticationController.signup(email, password);
+>>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
       Get.snackbar(
         "Sign Up",
         'Usuario creado correctamente',
         icon: const Icon(Icons.person, color: Colors.green),
         snackPosition: SnackPosition.BOTTOM,
       );
-      logInfo("Success sign up");
-      Get.to(AuthenticationPage());
     } catch (error) {
       if (error == 'The password is too weak') {
         Get.snackbar(
