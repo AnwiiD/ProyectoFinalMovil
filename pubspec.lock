@@ -152,8 +152,7 @@ packages:
       sha256: "4a07be6cb69c84d677a6c3096fcf960cc3285a8330b4603e0d463d15d9bd934c"
       url: "https://pub.dev"
     source: hosted
-<<<<<<< HEAD
-    version: "1.17.2"
+    version: "1.17.1"
   connectivity_plus:
     dependency: "direct main"
     description:
@@ -178,9 +177,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
-=======
-    version: "1.17.1"
->>>>>>> 95ca9be4a753e363bd15b6624d63d2aff99d8709
   crypto:
     dependency: transitive
     description:
@@ -241,10 +237,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_auth
-      sha256: af5a03a0c377af9218c9aa3c6a9ef5207d9621f0f6cd3b5099a5f570e1a03206
+      sha256: a9281f9b149ad4cffbfe91725ee5159c63aca2f27c05e2e87052fc240abe212c
       url: "https://pub.dev"
     source: hosted
-    version: "4.13.0"
+    version: "4.14.0"
   firebase_auth_platform_interface:
     dependency: transitive
     description:
@@ -400,10 +396,10 @@ packages:
     dependency: "direct main"
     description:
       name: get
-      sha256: e4e7335ede17452b391ed3b2ede016545706c01a02292a6c97619705e7d2a85e
+      sha256: "2ba20a47c8f1f233bed775ba2dd0d3ac97b4cf32fc17731b3dfc672b06b0e92a"
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.6"
+    version: "4.6.5"
   glob:
     dependency: transitive
     description:
@@ -768,8 +764,7 @@ packages:
       sha256: eb6ac1540b26de412b3403a163d919ba86f6a973fe6cc50ae3541b80092fdcfb
       url: "https://pub.dev"
     source: hosted
-<<<<<<< HEAD
-    version: "0.6.0"
+    version: "0.5.1"
   timing:
     dependency: transitive
     description:
@@ -778,9 +773,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-=======
-    version: "0.5.1"
->>>>>>> 95ca9be4a753e363bd15b6624d63d2aff99d8709
   typed_data:
     dependency: transitive
     description:
@@ -805,7 +797,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
-<<<<<<< HEAD
   watcher:
     dependency: transitive
     description:
@@ -814,14 +805,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  web:
-    dependency: transitive
-    description:
-      name: web
-      sha256: dc8ccd225a2005c1be616fe02951e2e342092edf968cf0844220383757ef8f10
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.4-beta"
   web_socket_channel:
     dependency: transitive
     description:
@@ -863,10 +846,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.1.0-185.0.dev <4.0.0"
-  flutter: ">=3.13.0"
-=======
-sdks:
   dart: ">=3.0.6 <4.0.0"
-  flutter: ">=3.3.0"
->>>>>>> 95ca9be4a753e363bd15b6624d63d2aff99d8709
+  flutter: ">=3.7.0"
