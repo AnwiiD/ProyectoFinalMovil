@@ -11,7 +11,7 @@ class SignUpPage extends StatelessWidget {
       TextEditingController(text: "a@a.com");
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordCheckController = TextEditingController();
-
+  final TextEditingController nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +38,11 @@ class SignUpPage extends StatelessWidget {
                             controller: emailController,
                             decoration: const InputDecoration(
                                 labelText: 'Correo Electrónico'),
+                          ),
+                          TextField(
+                            controller: nameController,
+                            decoration: const InputDecoration(
+                                labelText: 'Nombre de usuario'),
                           ),
                           TextField(
                             controller: passwordController,
@@ -77,7 +82,8 @@ class SignUpPage extends StatelessWidget {
                                 if (passwordController.text ==
                                     passwordCheckController.text) {
                                   signup(emailController.text,
-                                      passwordController.text);
+                                      passwordController.text,
+                                      nameController.text);
                                 } else {
                                   Get.snackbar(
                                     "Sign Up Error",
@@ -98,9 +104,9 @@ class SignUpPage extends StatelessWidget {
             ]))));
   }
 
-  void signup(String email, String password) async {
+  void signup(String email, String password, String name) async {
     try {
-      await authenticationController.signup(email, password);
+      await authenticationController.signup(email, password, name);
       Get.snackbar(
         "Sign Up",
         'Usuario creado correctamente',

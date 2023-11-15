@@ -13,6 +13,7 @@ class AuthenticationController extends GetxController {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+      logInfo("q");
       return Future.value();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -24,7 +25,7 @@ class AuthenticationController extends GetxController {
   }
 
   // método usado para crear un usuario
-  Future<void> signup(email, password) async {
+  Future<void> signup(email, password, name) async {
     try {
       // primero creamos el usuario en el sistema de autenticación de firebase
       UserCredential userCredential = await FirebaseAuth.instance
@@ -34,7 +35,7 @@ class AuthenticationController extends GetxController {
 
       // después creamos el usuario en la base de datos de tiempo real usando el
       // userController
-      await userController.createUser(email, userCredential.user!.uid);
+      await userController.createUser(email, userCredential.user!.uid, name);
       return Future.value();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -73,10 +74,16 @@ class AuthenticationController extends GetxController {
           .child(group)
           .child('users')
           .child(getUid())
-          .set({'email': userEmail(), 'uid': getUid()});
+          .set({'email': userEmail(), 'uid': getUid(), 'name': userName()});
     } catch (error) {
       logError(error);
       return Future.error(error);
     }
+  }
+
+  Future<String> userName() async{
+    DataSnapshot ref = await databaseReference.child("userList").child(getUid()).get();
+    final json = ref as Map<dynamic, dynamic>;
+    return Future.value(json["name"]);
   }
 }

@@ -52,7 +52,7 @@ class LocatorService {
     await getPermission();
     try {
       Position l = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high);
       userLocation = UserLocation(latitude: l.latitude, longitude: l.longitude);
       return Future.value(userLocation);
     } catch (e) {

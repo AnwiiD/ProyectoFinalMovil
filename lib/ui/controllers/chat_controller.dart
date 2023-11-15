@@ -36,6 +36,17 @@ class ChatController extends GetxController {
         databaseReference.child("msg").child(chatKey).onChildChanged.listen(_onEntryChanged);
   }
 
+   void subscribeToUpdatedGroup(uidGroup) {
+    messages.clear();
+    // obtenemos la instancia del AuthenticationController
+
+    newEntryStreamSubscription =
+        databaseReference.child("group-msg").child(uidGroup).onChildAdded.listen(_onEntryAdded);
+
+    updateEntryStreamSubscription =
+        databaseReference.child("group-msg").child(uidGroup).onChildChanged.listen(_onEntryChanged);
+  }
+
   // método en el que cerramos los streams
   void unsubscribe() {
 
@@ -92,6 +103,17 @@ class ChatController extends GetxController {
     String senderUid = authenticationController.getUid();
     try {
       databaseReference.child('msg').child(key).push().set({'senderUid': senderUid, 'msg': msg});
+    } catch (error) {
+      logError(error);
+      return Future.error(error);
+    }
+  }
+
+    Future<void> sendGroupChat(remoteUserUid, remoteGroupUid, msg) async {
+    AuthenticationController authenticationController = Get.find();
+    String senderUid = authenticationController.getUid();
+    try {
+      databaseReference.child('group-msg').child(remoteGroupUid).push().set({'senderUid': senderUid, 'msg': msg});
     } catch (error) {
       logError(error);
       return Future.error(error);

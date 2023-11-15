@@ -8,6 +8,7 @@ import 'package:loggy/loggy.dart';
 import '../../data/model/app_user.dart';
 import '../controllers/authentication_controller.dart';
 import '../controllers/user_controller.dart';
+import 'chat_group_page.dart';
 
 // Widget donde se presentan los usuarios con los que se puede comenzar un chat
 class UserListPage extends StatefulWidget {
@@ -64,9 +65,10 @@ class _UserListPageState extends State<UserListPage>
       child: ListTile(
         onTap: () {
           if (_userInGroup(element)) {
-            Get.to(ChatPage(), arguments: [
+            Get.to(ChatGroupPage(), arguments: [
             authenticationController.getUid(),
-            authenticationController.userEmail(),]);
+            element.gid,
+            element.name]);
           } else {
             _joinGroupDialog(context, element);
           }
@@ -97,9 +99,9 @@ class _UserListPageState extends State<UserListPage>
           ]);
         },
         title: Text(
-          element.email,
+          element.name,
         ),
-        subtitle: Text(element.uid),
+        subtitle: Text(element.email),
       ),
     );
   }
@@ -146,7 +148,7 @@ class _UserListPageState extends State<UserListPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bienvenido ${authenticationController.userEmail()}'),
+        title: Text('Bienvenido ${getName()}'),
         actions: [
           Row(children: [
             const Text('Cerrar sesión'),
@@ -243,21 +245,15 @@ class _UserListPageState extends State<UserListPage>
   }
 
   Widget _buildFloatingActionButton(int tabIndex, context) {
-    if (tabIndex == 0) {
+    if (tabIndex == 1) {
       return FloatingActionButton(
         onPressed: () {
-          logInfo("buttonPressed");
-        },
-        child: const Icon(Icons.chat),
-      );
-    } else {
-      return FloatingActionButton(
-        onPressed: () {
-          logInfo("banca grupo");
           _createGroupDialog(context);
         },
         child: const Icon(Icons.add),
       );
+    } else {
+      return Container();
     }
   }
 
@@ -269,5 +265,10 @@ class _UserListPageState extends State<UserListPage>
       }
     }
     return false;
+  }
+  
+  getName() async{
+    String name = await authenticationController.userName();
+    return name;
   }
 }

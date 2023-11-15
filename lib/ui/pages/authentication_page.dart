@@ -1,6 +1,7 @@
 import 'package:f_chat_template/ui/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loggy/loggy.dart';
 
 import '../controllers/authentication_controller.dart';
 
@@ -11,14 +12,27 @@ class AuthenticationPage extends StatelessWidget {
   AuthenticationPage({Key? key}) : super(key: key);
   final AuthenticationController authenticationController = Get.find();
 
-  void login(String user, String password) {
+  void login(String user, String password) async{
     try {
-      authenticationController.login(user, password);
+      await authenticationController.login(user, password);
     } catch (error) {
       switch (error) {
         case 'User not found':
+          logInfo("usernotfound");
+          Get.snackbar(
+            "Login Error",
+            'Los datos son erróneos, verifique y vuelva a intentar',
+            icon: const Icon(Icons.person, color: Colors.red),
+            snackPosition: SnackPosition.BOTTOM,
+          );
           break;
         case 'Wrong password':
+          Get.snackbar(
+            "Login Error",
+            'Los datos son erróneos, verifique y vuelva a intentar',
+            icon: const Icon(Icons.person, color: Colors.red),
+            snackPosition: SnackPosition.BOTTOM,
+          );
           break;
       }
     }
@@ -32,8 +46,7 @@ class AuthenticationPage extends StatelessWidget {
         TextEditingController(text: '123456');
     return Scaffold(
       appBar: AppBar(title: const Text("Chat App - Login")),
-      body: 
-      SafeArea(
+      body: SafeArea(
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -43,39 +56,40 @@ class AuthenticationPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: Colors.blue.shade100,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
-                      child: Padding(padding: EdgeInsets.all(20.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            TextField(
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                  labelText: 'Correo Electrónico'),
-                            ),
-                            const SizedBox(height: 20),
-                            TextField(
-                              controller: passwordController,
-                              keyboardType: TextInputType.number,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                  labelText: 'Contraseña'),
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                login(emailController.text,
-                                    passwordController.text);
-                              },
-                              child: const Text('Iniciar Sesión'),
-                            ),
-                          ]),)
-                    ),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.blue.shade100,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10))),
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                TextField(
+                                  controller: emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Correo Electrónico'),
+                                ),
+                                const SizedBox(height: 20),
+                                TextField(
+                                  controller: passwordController,
+                                  keyboardType: TextInputType.number,
+                                  obscureText: true,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Contraseña'),
+                                ),
+                                const SizedBox(height: 20),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    login(emailController.text,
+                                        passwordController.text);
+                                  },
+                                  child: const Text('Iniciar Sesión'),
+                                ),
+                              ]),
+                        )),
                   ),
                 ),
                 Expanded(
