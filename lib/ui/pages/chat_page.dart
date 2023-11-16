@@ -70,7 +70,6 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _list() {
     String uid = authenticationController.getUid();
-    logInfo('Current user $uid');
     // Escuchamos la lista de mensajes entre los dos usuarios usando el ChatController
     return GetX<ChatController>(builder: (controller) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());

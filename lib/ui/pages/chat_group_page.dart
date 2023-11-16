@@ -78,7 +78,6 @@ class _ChatPageState extends State<ChatGroupPage> {
 
   Widget _list() {
     String uid = authenticationController.getUid();
-    logInfo('Current user $uid');
     // Escuchamos la lista de mensajes entre los dos usuarios usando el ChatController
     return GetX<ChatController>(builder: (controller) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
@@ -93,10 +92,10 @@ class _ChatPageState extends State<ChatGroupPage> {
     });
   }
 
-  Future<void> _sendMsg(String text) async {
+    Future<void> _sendGroupMsg(String text) async {
     // enviamos un nuevo mensaje usando el ChatController
     logInfo("Calling _sendMsg with $text");
-    await chatController.sendGroupChat(remoteUserUid, remoteGroup, text);
+    await chatController.sendGroupChat(remoteUserUid, remoteGroup, text, authenticationController.name.value);
   }
 
   Widget _textInput() {
@@ -113,7 +112,7 @@ class _ChatPageState extends State<ChatGroupPage> {
                 labelText: 'Your message',
               ),
               onSubmitted: (value) {
-                _sendMsg(_controller.text);
+                _sendGroupMsg(_controller.text);
                 _controller.clear();
               },
               controller: _controller,
@@ -124,7 +123,7 @@ class _ChatPageState extends State<ChatGroupPage> {
             key: const Key('sendButton'),
             child: const Text('Send'),
             onPressed: () {
-              _sendMsg(_controller.text);
+              _sendGroupMsg(_controller.text);
               _controller.clear();
             })
       ],

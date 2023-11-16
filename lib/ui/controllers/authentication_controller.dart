@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
@@ -7,13 +8,13 @@ import 'user_controller.dart';
 // este controlador esconde los detalles de la implementación de firebase
 class AuthenticationController extends GetxController {
   final databaseReference = FirebaseDatabase.instance.ref();
+  Rx<String> name = "".obs;
 
   // método usado para logearse en la aplicación
   Future<void> login(email, password) async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      logInfo("q");
       return Future.value();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -74,16 +75,22 @@ class AuthenticationController extends GetxController {
           .child(group)
           .child('users')
           .child(getUid())
-          .set({'email': userEmail(), 'uid': getUid(), 'name': userName()});
+          .set({'email': userEmail(), 'uid': getUid(), 'name': name.value});
     } catch (error) {
       logError(error);
       return Future.error(error);
     }
   }
 
-  Future<String> userName() async{
-    DataSnapshot ref = await databaseReference.child("userList").child(getUid()).get();
-    final json = ref as Map<dynamic, dynamic>;
-    return Future.value(json["name"]);
+
+  getName() async{
+    DataSnapshot ref = await databaseReference.child("userList").get();
+    var users = ref.children;
+    for (var user in users) {
+      var userMap = user.value as Map<dynamic, dynamic>;
+      if (userMap["uid"] == getUid()) {
+        name.value = userMap["alias"];
+      }
+    }
   }
 }

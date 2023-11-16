@@ -78,4 +78,14 @@ class UserController extends GetxController {
     }
   }
 
+  getName(useruid) async {
+    DataSnapshot ref = await databaseRef.child("userList").get();
+    var users = ref.children;
+    for (var user in users) {
+      var userMap = user.value as Map<dynamic, dynamic>;
+      if (userMap["uid"] == useruid) {
+        return userMap["alias"];
+      }
+    }
+  }
 }

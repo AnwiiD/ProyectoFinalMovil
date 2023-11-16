@@ -13,18 +13,22 @@ class LocalMessage extends HiveObject {
   String msg;
   @HiveField(2)
   String senderUid;
+  @HiveField(3)
+  String senderName;
 
-  LocalMessage(this.key, this.msg, this.senderUid);
+  LocalMessage(this.key, this.msg, this.senderUid, this.senderName);
 
   LocalMessage.fromJson(DataSnapshot snapshot, Map<dynamic, dynamic> json)
       : key = snapshot.key ?? "0",
         senderUid = json['senderUid'] ?? "senderUid",
-        msg = json['msg'] ?? "msg";
+        msg = json['msg'] ?? "msg",
+        senderName = json['senderName'] ?? "noname";
 
   toJson() {
     return {
       "msg": msg,
       "senderUid": senderUid,
+      'senderName' : senderName
     };
   }
 }

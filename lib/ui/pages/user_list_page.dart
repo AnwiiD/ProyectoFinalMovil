@@ -28,6 +28,7 @@ class _UserListPageState extends State<UserListPage>
   GroupController groupController = Get.find();
   ConnectionController connectionController = Get.find();
 
+
   TextEditingController groupNameController = TextEditingController();
   late TabController _tabController;
 
@@ -36,6 +37,7 @@ class _UserListPageState extends State<UserListPage>
     // le decimos al userController que se suscriba a los streams
     userController.start();
     groupController.start();
+    authenticationController.getName();
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -68,14 +70,11 @@ class _UserListPageState extends State<UserListPage>
       child: ListTile(
         onTap: () {
           if (_userInGroup(element)) {
-<<<<<<< HEAD
-            Get.to(ChatGroupPage(), arguments: [
-=======
-            Get.to(const ChatPage(), arguments: [
->>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
-            authenticationController.getUid(),
-            element.gid,
-            element.name]);
+            Get.to(const ChatGroupPage(), arguments: [
+              authenticationController.getUid(),
+              element.gid,
+              element.name
+            ]);
           } else {
             _joinGroupDialog(context, element);
           }
@@ -83,7 +82,7 @@ class _UserListPageState extends State<UserListPage>
         title: Text(
           element.name,
         ),
-        subtitle: Text(element.users.toString()),
+        subtitle: Text(getUsernames(element), style: const TextStyle(fontSize: 20.0),),
       ),
     );
   }
@@ -153,52 +152,62 @@ class _UserListPageState extends State<UserListPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-<<<<<<< HEAD
-        title: Text('Bienvenido ${getName()}'),
-=======
-        backgroundColor: connectionController.connected.value == ConnectivityResult.none
-            ? Colors.red
-            : Colors.green,
-        title: Text('Bienvenido ${authenticationController.userEmail()}'),
->>>>>>> f4fd0f6e02299930fd01d3193666154935c8fa8f
-        actions: [
-          Row(children: [
-            const Text('Cerrar sesión'),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                _logout();
-              },
+    return Obx(() => Scaffold(
+          appBar: AppBar(
+            backgroundColor:
+                connectionController.connected.value == ConnectivityResult.none
+                    ? Colors.red
+                    : Colors.green,
+            title: Text('Bienvenido ${authenticationController.name.value}'),
+            actions: [
+              Row(children: [
+                const Text('Cerrar sesión'),
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    _logout();
+                  },
+                ),
+              ]),
+              IconButton(
+                icon: const Icon(Icons.wifi),
+                onPressed: () {
+                  var connection = connectionController.connected.value;
+                  if (connection == ConnectivityResult.none) {
+                    connectionController.connected.value =
+                        ConnectivityResult.wifi;
+                  } else {
+                    connectionController.connected.value =
+                        ConnectivityResult.none;
+                  }
+                },
+              ),
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Chats', icon: Icon(Icons.chat)),
+                Tab(text: 'Grupos', icon: Icon(Icons.group)),
+              ],
             ),
-          ])
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Chats', icon: Icon(Icons.chat)),
-            Tab(text: 'Grupos', icon: Icon(Icons.group)),
-          ],
-        ),
-      ),
-      body: DefaultTabController(
-        length: 2,
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            Scaffold(
-              body: Center(child: chatList()),
-              floatingActionButton: _buildFloatingActionButton(0, context),
+          ),
+          body: DefaultTabController(
+            length: 2,
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                Scaffold(
+                  body: Center(child: chatList()),
+                  floatingActionButton: _buildFloatingActionButton(0, context),
+                ),
+                Scaffold(
+                  body: Center(child: groupList()),
+                  floatingActionButton: _buildFloatingActionButton(1, context),
+                ),
+              ],
             ),
-            Scaffold(
-              body: Center(child: groupList()),
-              floatingActionButton: _buildFloatingActionButton(1, context),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   void _joinGroupDialog(BuildContext context, element) {
@@ -281,8 +290,11 @@ class _UserListPageState extends State<UserListPage>
     return false;
   }
   
-  getName() async{
-    String name = await authenticationController.userName();
-    return name;
+  String getUsernames(AppGroup element) {
+    String userlist = "Integrantes: ";
+    for(var user in element.users.values){
+      userlist = userlist+user["name"]+" / ";
+    }
+    return userlist;
   }
 }

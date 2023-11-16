@@ -109,11 +109,11 @@ class ChatController extends GetxController {
     }
   }
 
-    Future<void> sendGroupChat(remoteUserUid, remoteGroupUid, msg) async {
+    Future<void> sendGroupChat(remoteUserUid, remoteGroupUid, msg, remoteUserName) async {
     AuthenticationController authenticationController = Get.find();
     String senderUid = authenticationController.getUid();
     try {
-      databaseReference.child('group-msg').child(remoteGroupUid).push().set({'senderUid': senderUid, 'msg': msg});
+      databaseReference.child('group-msg').child(remoteGroupUid).push().set({'senderUid': senderUid, 'msg': msg, 'senderName':remoteUserName});
     } catch (error) {
       logError(error);
       return Future.error(error);
