@@ -39,6 +39,7 @@ class _UserListPageState extends State<UserListPage>
     groupController.start();
     authenticationController.getName();
     super.initState();
+    loadCache();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -296,5 +297,9 @@ class _UserListPageState extends State<UserListPage>
       userlist = userlist+user["name"]+" / ";
     }
     return userlist;
+  }
+  
+  void loadCache() {
+    chatController.loadMessages();
   }
 }

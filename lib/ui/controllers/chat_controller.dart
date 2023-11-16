@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:js_util';
+import 'package:f_chat_template/data/model/local_message.dart';
 import 'package:f_chat_template/ui/controllers/authentication_controller.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
 
 import '../../data/model/message.dart';
@@ -29,30 +33,40 @@ class ChatController extends GetxController {
 
     String chatKey = getChatKey(authenticationController.getUid(), uidUser);
 
-    newEntryStreamSubscription =
-        databaseReference.child("msg").child(chatKey).onChildAdded.listen(_onEntryAdded);
+    newEntryStreamSubscription = databaseReference
+        .child("msg")
+        .child(chatKey)
+        .onChildAdded
+        .listen(_onEntryAdded);
 
-    updateEntryStreamSubscription =
-        databaseReference.child("msg").child(chatKey).onChildChanged.listen(_onEntryChanged);
+    updateEntryStreamSubscription = databaseReference
+        .child("msg")
+        .child(chatKey)
+        .onChildChanged
+        .listen(_onEntryChanged);
   }
 
-   void subscribeToUpdatedGroup(uidGroup) {
+  void subscribeToUpdatedGroup(uidGroup) {
     messages.clear();
     // obtenemos la instancia del AuthenticationController
 
-    newEntryStreamSubscription =
-        databaseReference.child("group-msg").child(uidGroup).onChildAdded.listen(_onEntryAdded);
+    newEntryStreamSubscription = databaseReference
+        .child("group-msg")
+        .child(uidGroup)
+        .onChildAdded
+        .listen(_onEntryAdded);
 
-    updateEntryStreamSubscription =
-        databaseReference.child("group-msg").child(uidGroup).onChildChanged.listen(_onEntryChanged);
+    updateEntryStreamSubscription = databaseReference
+        .child("group-msg")
+        .child(uidGroup)
+        .onChildChanged
+        .listen(_onEntryChanged);
   }
 
   // método en el que cerramos los streams
   void unsubscribe() {
-
     newEntryStreamSubscription.cancel();
     updateEntryStreamSubscription.cancel();
-
   }
 
   // este método es llamado cuando se tiene una nueva entrada
@@ -102,24 +116,48 @@ class ChatController extends GetxController {
     String key = getChatKey(authenticationController.getUid(), remoteUserUid);
     String senderUid = authenticationController.getUid();
     try {
-      databaseReference.child('msg').child(key).push().set({'senderUid': senderUid, 'msg': msg});
+      databaseReference
+          .child('msg')
+          .child(key)
+          .push()
+          .set({'senderUid': senderUid, 'msg': msg});
     } catch (error) {
       logError(error);
       return Future.error(error);
     }
   }
 
-    Future<void> sendGroupChat(remoteUserUid, remoteGroupUid, msg, remoteUserName) async {
+  Future<void> sendGroupChat(
+      remoteUserUid, remoteGroupUid, msg, remoteUserName) async {
     AuthenticationController authenticationController = Get.find();
     String senderUid = authenticationController.getUid();
     try {
-      databaseReference.child('group-msg').child(remoteGroupUid).push().set({'senderUid': senderUid, 'msg': msg, 'senderName':remoteUserName});
+      databaseReference.child('group-msg').child(remoteGroupUid).push().set(
+          {'senderUid': senderUid, 'msg': msg, 'senderName': remoteUserName});
     } catch (error) {
       logError(error);
       return Future.error(error);
     }
   }
 
-  // en esté método creamos chats inicialies con los que podemos probar la lectura
-  // de mensajes
+  void loadMessages() async {
+    DataSnapshot groups = await databaseReference.child('group-msg').get();
+    DataSnapshot chats = await databaseReference.child('msg').get();
+
+    var groupsMessages = groups.children;
+    var chatsMessages = chats.children;
+    var messageKeys = Hive.box("messages").keys;
+    Hive.box("messages").deleteAll(messageKeys);
+
+    for (var groupMessages in groupsMessages) {
+      for(var groupMessage in groupMessages.children){
+        
+        //LocalMessage localMessage = LocalMessage(null, message["msg"], message["senderUid"] , message["senderName"]);
+        //Hive.box("messages").add(localMessage); 
+      }
+    }
+    for (LocalMessage cacheMessage in Hive.box("messages").values) {
+      //logInfo(cacheMessage.senderName);
+    }
+  }
 }
