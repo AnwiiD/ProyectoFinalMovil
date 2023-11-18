@@ -1,3 +1,4 @@
+import 'package:f_chat_template/data/model/local_login.dart';
 import 'package:f_chat_template/data/model/local_message.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,11 @@ Future<List<Box>> _openBox() async {
   List<Box> boxList = [];
   await Hive.initFlutter();
   Hive.registerAdapter(LocalMessageAdapter());
+  Hive.registerAdapter(LocalLoginAdapter());
   boxList.add(await Hive.openBox('messages'));
+  boxList.add(await Hive.openBox("logins"));
   return boxList;
 }
-
 
 Future<void> main() async {
   // this is the key

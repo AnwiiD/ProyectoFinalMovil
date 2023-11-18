@@ -1,6 +1,10 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:f_chat_template/data/model/local_message.dart';
+import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
 import '../../data/model/message.dart';
 import '../controllers/authentication_controller.dart';
@@ -22,7 +26,6 @@ class _ChatPageState extends State<ChatGroupPage> {
   late String remoteUserUid;
   late String remoteGroupName;
 
-
   // obtenemos los parámetros del sistema de navegación
   dynamic argumentData = Get.arguments;
 
@@ -30,6 +33,8 @@ class _ChatPageState extends State<ChatGroupPage> {
   ChatController chatController = Get.find();
   AuthenticationController authenticationController = Get.find();
   LocationController locationController = Get.find();
+  ConnectionController connectionController = Get.find();
+
   @override
   void initState() {
     super.initState();
@@ -61,14 +66,14 @@ class _ChatPageState extends State<ChatGroupPage> {
       color: uid == element.senderUid ? Colors.yellow[200] : Colors.grey[300],
       child: ListTile(
         title: Text(
-          element.senderName,          
+          element.senderName,
           style: TextStyle(fontSize: 15.0, color: Colors.blue[900]),
           textAlign:
               uid == element.senderUid ? TextAlign.right : TextAlign.left,
         ),
         subtitle: Text(
           element.msg,
-          style: TextStyle(fontSize: 20.0),
+          style: const TextStyle(fontSize: 20.0),
           textAlign:
               uid == element.senderUid ? TextAlign.right : TextAlign.left,
         ),
@@ -92,10 +97,16 @@ class _ChatPageState extends State<ChatGroupPage> {
     });
   }
 
-    Future<void> _sendGroupMsg(String text) async {
+  Future<void> _sendGroupMsg(String text) async {
     // enviamos un nuevo mensaje usando el ChatController
     logInfo("Calling _sendMsg with $text");
-    await chatController.sendGroupChat(remoteUserUid, remoteGroup, text, authenticationController.name.value);
+    if (connectionController.connected.value == ConnectivityResult.none) {
+      await Hive.box("messages")
+          .add(LocalMessage("", text, remoteUserUid, authenticationController.name.value));
+    } else {
+      await chatController.sendGroupChat(remoteUserUid, remoteGroup, text,
+          authenticationController.name.value);
+    }
   }
 
   Widget _textInput() {

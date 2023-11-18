@@ -28,7 +28,6 @@ class _UserListPageState extends State<UserListPage>
   GroupController groupController = Get.find();
   ConnectionController connectionController = Get.find();
 
-
   TextEditingController groupNameController = TextEditingController();
   late TabController _tabController;
 
@@ -39,7 +38,9 @@ class _UserListPageState extends State<UserListPage>
     groupController.start();
     authenticationController.getName();
     super.initState();
-    loadCache();
+    if (connectionController.connected.value != ConnectivityResult.none) {
+      loadCache();
+    }
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -83,7 +84,10 @@ class _UserListPageState extends State<UserListPage>
         title: Text(
           element.name,
         ),
-        subtitle: Text(getUsernames(element), style: const TextStyle(fontSize: 20.0),),
+        subtitle: Text(
+          getUsernames(element),
+          style: const TextStyle(fontSize: 20.0),
+        ),
       ),
     );
   }
@@ -290,15 +294,15 @@ class _UserListPageState extends State<UserListPage>
     }
     return false;
   }
-  
+
   String getUsernames(AppGroup element) {
     String userlist = "Integrantes: ";
-    for(var user in element.users.values){
-      userlist = userlist+user["name"]+" / ";
+    for (var user in element.users.values) {
+      userlist = userlist + user["name"] + " / ";
     }
     return userlist;
   }
-  
+
   void loadCache() {
     chatController.loadMessages();
   }

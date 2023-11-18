@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:js_util';
 import 'package:f_chat_template/data/model/local_message.dart';
 import 'package:f_chat_template/ui/controllers/authentication_controller.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -150,14 +148,25 @@ class ChatController extends GetxController {
     Hive.box("messages").deleteAll(messageKeys);
 
     for (var groupMessages in groupsMessages) {
-      for(var groupMessage in groupMessages.children){
-        
-        //LocalMessage localMessage = LocalMessage(null, message["msg"], message["senderUid"] , message["senderName"]);
-        //Hive.box("messages").add(localMessage); 
+      for (var groupMessage in groupMessages.children) {
+        var message = groupMessage.value as Map<dynamic, dynamic>;
+        LocalMessage localMessage = LocalMessage(
+            "", message["msg"], message["senderUid"], message["senderName"]);
+        Hive.box("messages").add(localMessage);
       }
     }
-    for (LocalMessage cacheMessage in Hive.box("messages").values) {
-      //logInfo(cacheMessage.senderName);
+
+    for (var chatMessages in chatsMessages) {
+      for (var chatMessage in chatMessages.children) {
+        var message = chatMessage.value as Map<dynamic, dynamic>;
+        LocalMessage localMessage =
+            LocalMessage("", message["msg"], message["senderUid"], "noname");
+        Hive.box("messages").add(localMessage);
+      }
     }
+  }
+
+  void updateMessages() {
+
   }
 }

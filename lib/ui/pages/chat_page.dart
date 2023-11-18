@@ -1,6 +1,10 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:f_chat_template/data/model/local_message.dart';
+import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
 import '../../data/model/message.dart';
 import '../controllers/authentication_controller.dart';
@@ -28,6 +32,8 @@ class _ChatPageState extends State<ChatPage> {
   ChatController chatController = Get.find();
   AuthenticationController authenticationController = Get.find();
   LocationController locationController = Get.find();
+  ConnectionController connectionController = Get.find();
+
   @override
   void initState() {
     super.initState();
@@ -87,7 +93,11 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _sendMsg(String text) async {
     // enviamos un nuevo mensaje usando el ChatController
     logInfo("Calling _sendMsg with $text");
-    await chatController.sendChat(remoteUserUid, text);
+    if (connectionController.connected.value == ConnectivityResult.none) {
+      await Hive.box("messages").add(LocalMessage("", text, remoteUserUid, "noname"));
+    } else {
+      await chatController.sendChat(remoteUserUid, text);
+    }
   }
 
   Widget _textInput() {
@@ -129,7 +139,6 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
     return Scaffold(
         appBar: AppBar(title: Text("Chat with $remoteEmail")),

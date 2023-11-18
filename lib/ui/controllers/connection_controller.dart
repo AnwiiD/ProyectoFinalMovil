@@ -16,6 +16,11 @@ class ConnectionController extends GetxController {
       logInfo("Connection Changed");
       connected.value = result;
     });
+
+    connected.listen((value) {
+      logInfo("connection changed $value");
+      
+    });
     super.onInit();
   }
 }

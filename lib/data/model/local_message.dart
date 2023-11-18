@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 
 part "local_message.g.dart";
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class LocalMessage extends HiveObject {
   @override
   @HiveField(0)

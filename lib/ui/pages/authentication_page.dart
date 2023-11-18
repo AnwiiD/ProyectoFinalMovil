@@ -3,6 +3,8 @@ import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:loggy/loggy.dart';
 
 import '../controllers/authentication_controller.dart';
 
@@ -16,26 +18,38 @@ class AuthenticationPage extends StatelessWidget {
 
   void login(String user, String password) async {
     try {
-      await authenticationController.login(user, password);
-    } catch (error) {
-      switch (error) {
-        case 'User not found':
+      if (connectionController.connected.value == ConnectivityResult.none) {
+        logInfo("local login");
+        var users = Hive.box("logins").values;
+        for (var boxuser in users) {
+          if (boxuser.email == user && boxuser.password == password) {
+            logInfo("user found");
+            authenticationController.setLocal(
+                boxuser.email, boxuser.name, boxuser.senderUid);
+            break;
+          }
+        }
+        logInfo(authenticationController.isLocal.value);
+        if (!authenticationController.isLocal.value) {
           Get.snackbar(
             "Login Error",
-            'Los datos son erróneos, verifique y vuelva a intentar',
+            'Usuario no encontrado, verifique y vuelva a intentar (local)',
             icon: const Icon(Icons.person, color: Colors.red),
             snackPosition: SnackPosition.BOTTOM,
           );
-          break;
-        case 'Wrong password':
-          Get.snackbar(
-            "Login Error",
-            'Los datos son erróneos, verifique y vuelva a intentar',
-            icon: const Icon(Icons.person, color: Colors.red),
-            snackPosition: SnackPosition.BOTTOM,
-          );
-          break;
+        }
+      } else {
+        await authenticationController.login(user, password);
+        loadUser(password);
       }
+    } catch (error) {
+      logInfo(error);
+      Get.snackbar(
+        "Login Error",
+        'Usuario no encontrado, verifique y vuelva a intentar (normal)',
+        icon: const Icon(Icons.person, color: Colors.red),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -75,7 +89,7 @@ class AuthenticationPage extends StatelessWidget {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(10))),
                         child: Padding(
-                          padding: EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -153,5 +167,9 @@ class AuthenticationPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void loadUser(password) {
+    authenticationController.loadUser(password);
   }
 }

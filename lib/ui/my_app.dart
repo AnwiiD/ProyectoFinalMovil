@@ -13,13 +13,13 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    Get.put(ConnectionController());
+    Get.put(UserController());
     Get.put(ChatController());
     Get.put(AuthenticationController());
-    Get.put(UserController());
     Get.put(LocatorService());
     Get.put(LocationController());
     Get.put(GroupController());
-    Get.put(ConnectionController());
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Chat App',

@@ -105,6 +105,7 @@ class SignUpPage extends StatelessWidget {
   void signup(String email, String password, String name) async {
     try {
       await authenticationController.signup(email, password, name);
+      Get.back();
       Get.snackbar(
         "Sign Up",
         'Usuario creado correctamente',
