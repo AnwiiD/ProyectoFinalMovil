@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
@@ -18,18 +17,17 @@ class AuthenticationPage extends StatelessWidget {
 
   void login(String user, String password) async {
     try {
-      if (connectionController.connected.value == ConnectivityResult.none) {
+      if (!connectionController.connected.value) {
         logInfo("local login");
         var users = Hive.box("logins").values;
         for (var boxuser in users) {
           if (boxuser.email == user && boxuser.password == password) {
             logInfo("user found");
             authenticationController.setLocal(
-                boxuser.email, boxuser.name, boxuser.senderUid);
+                boxuser.email, boxuser.name, boxuser.senderUid, boxuser.password);
             break;
           }
         }
-        logInfo(authenticationController.isLocal.value);
         if (!authenticationController.isLocal.value) {
           Get.snackbar(
             "Login Error",
@@ -64,12 +62,7 @@ class AuthenticationPage extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.wifi),
           onPressed: () {
-            var connection = connectionController.connected.value;
-            if (connection == ConnectivityResult.none) {
-              connectionController.connected.value = ConnectivityResult.wifi;
-            } else {
-              connectionController.connected.value = ConnectivityResult.none;
-            }
+           connectionController.connected.value = !connectionController.connected.value;
           },
         ),
       ], title: const Text("Chat App - Login")),
@@ -116,10 +109,9 @@ class AuthenticationPage extends StatelessWidget {
                                   child: const Text('Iniciar Sesión'),
                                 ),
                                 Obx(() => Text(
-                                      connectionController.connected.value ==
-                                              ConnectivityResult.none
-                                          ? "No Connection"
-                                          : "Connected to ${connectionController.connected.value.name}",
+                                      connectionController.connected.value
+                                          ?"Connected to Internet" 
+                                          : "No Connection",
                                     ))
                               ]),
                         )),
@@ -146,8 +138,7 @@ class AuthenticationPage extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (connectionController.connected.value ==
-                                        ConnectivityResult.none) {
+                                    if (connectionController.connected.value) {
                                       Get.snackbar(
                                         "Sign Up Error",
                                         'Necesita acceder a internet para crear una cuenta',

@@ -16,17 +16,12 @@ class FirebaseCentral extends StatelessWidget {
     // aquí dependiendo del estado de autenticación, el cual
     // obtenemos en el stream, vamos a cargar la interfaz de autenticación
     // o el UserListPage
-    return 
-    
-    Obx(() => StreamBuilder(
+    return StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if (snapshot.hasData || authenticationController.isLocal.value) {
-            return const UserListPage();
-          } else {
-            return AuthenticationPage();
-          }
-        }));
-   
+          return Obx(() => snapshot.hasData || authenticationController.isLocal.value ? 
+            const UserListPage() :
+            AuthenticationPage());
+        });
   }
 }

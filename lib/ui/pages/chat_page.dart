@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:f_chat_template/data/model/local_message.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/location_controller.dart';
@@ -46,7 +45,11 @@ class _ChatPageState extends State<ChatPage> {
     _scrollController = ScrollController();
 
     // Le pedimos al chatController que se suscriba los chats entre los dos usuarios
-    chatController.subscribeToUpdated(remoteUserUid);
+    if (connectionController.connected.value) {
+      chatController.subscribeToUpdated(remoteUserUid);
+    }else{
+      chatController.getLocalMessages(remoteUserUid);
+    }
   }
 
   @override
@@ -93,10 +96,12 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _sendMsg(String text) async {
     // enviamos un nuevo mensaje usando el ChatController
     logInfo("Calling _sendMsg with $text");
-    if (connectionController.connected.value == ConnectivityResult.none) {
-      await Hive.box("messages").add(LocalMessage("", text, remoteUserUid, "noname"));
-    } else {
+    if (connectionController.connected.value) {
       await chatController.sendChat(remoteUserUid, text);
+    } else {
+      String key = chatController.getChatKey(remoteUserUid, authenticationController.getUid());
+      await Hive.box("messages").add(
+          LocalMessage(key, text, authenticationController.getUid(), "noname"));
     }
   }
 

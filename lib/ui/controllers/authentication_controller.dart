@@ -14,6 +14,7 @@ class AuthenticationController extends GetxController {
   RxString name = "".obs;
   RxString localEmail = "".obs;
   RxString localUid = "".obs;
+  RxString localPass = "".obs;
   RxBool isLocal = false.obs;
 
   // método usado para logearse en la aplicación
@@ -58,8 +59,14 @@ class AuthenticationController extends GetxController {
   logout() async {
     try {
       if (isLocal.value) {
+        logInfo("logout local");
         isLocal.value = false;
+        name.value = "";
+        localEmail.value = "";
+        localUid.value = "";
+        localPass.value = "";
       } else {
+        logInfo("logout remote");
         await FirebaseAuth.instance.signOut();
       }
     } catch (e) {
@@ -120,10 +127,11 @@ class AuthenticationController extends GetxController {
     ;
   }
 
-  void setLocal(String email, String user, String uid) {
+  void setLocal(String email, String user, String uid, String password) {
     localEmail.value = email;
     name.value = user;
     localUid.value = uid;
+    localPass.value = password;
     isLocal.value = true;
   }
 }

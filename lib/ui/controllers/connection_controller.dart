@@ -5,22 +5,17 @@ import 'package:loggy/loggy.dart';
 
 class ConnectionController extends GetxController {
   Connectivity connectivity = Connectivity();
-  Rx<ConnectivityResult> connected = ConnectivityResult.none.obs;
-  late StreamSubscription<ConnectivityResult> conSubs;
+  RxBool connected = false.obs;
 
   @override
   Future<void> onInit() async {
     logInfo("First connection...");
-    connected.value = await connectivity.checkConnectivity();
+    connected.value = await connectivity.checkConnectivity() == ConnectivityResult.none ? false: true;
     connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      logInfo("Connection Changed");
-      connected.value = result;
+      connected.value = result == ConnectivityResult.none ? false: true;
     });
 
-    connected.listen((value) {
-      logInfo("connection changed $value");
-      
-    });
     super.onInit();
   }
+
 }

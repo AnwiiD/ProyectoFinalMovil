@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:f_chat_template/data/model/app_group.dart';
 import 'package:f_chat_template/ui/controllers/chat_controller.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
@@ -38,7 +37,7 @@ class _UserListPageState extends State<UserListPage>
     groupController.start();
     authenticationController.getName();
     super.initState();
-    if (connectionController.connected.value != ConnectivityResult.none) {
+    if (connectionController.connected.value) {
       loadCache();
     }
     _tabController = TabController(length: 2, vsync: this);
@@ -160,10 +159,11 @@ class _UserListPageState extends State<UserListPage>
     return Obx(() => Scaffold(
           appBar: AppBar(
             backgroundColor:
-                connectionController.connected.value == ConnectivityResult.none
-                    ? Colors.red
-                    : Colors.green,
-            title: Text('Bienvenido ${authenticationController.name.value}'),
+                connectionController.connected.value
+                    ? Colors.green
+                    : Colors.red,
+            title: Obx(() => Text(
+                'Bienvenido ${authenticationController.name.value} ${getConnectivity()}')),
             actions: [
               Row(children: [
                 const Text('Cerrar sesión'),
@@ -177,14 +177,7 @@ class _UserListPageState extends State<UserListPage>
               IconButton(
                 icon: const Icon(Icons.wifi),
                 onPressed: () {
-                  var connection = connectionController.connected.value;
-                  if (connection == ConnectivityResult.none) {
-                    connectionController.connected.value =
-                        ConnectivityResult.wifi;
-                  } else {
-                    connectionController.connected.value =
-                        ConnectivityResult.none;
-                  }
+                  connectionController.connected.value = !connectionController.connected.value;
                 },
               ),
             ],
@@ -305,5 +298,11 @@ class _UserListPageState extends State<UserListPage>
 
   void loadCache() {
     chatController.loadMessages();
+  }
+
+  getConnectivity() {
+    return connectionController.connected.value
+        ? "desde Remoto"
+        : "desde Local";
   }
 }
