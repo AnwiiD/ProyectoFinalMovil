@@ -17,6 +17,16 @@ class AuthenticationController extends GetxController {
   RxString localPass = "".obs;
   RxBool isLocal = false.obs;
 
+  @override
+  onInit(){
+    super.onInit();
+    connectionController.connected.listen((value) {
+      if(value && localEmail.value != ""){
+        updateUser();
+      }
+    });
+  }
+
   // método usado para logearse en la aplicación
   Future<void> login(email, password) async {
     try {
@@ -133,5 +143,10 @@ class AuthenticationController extends GetxController {
     localUid.value = uid;
     localPass.value = password;
     isLocal.value = true;
+  }
+
+  void updateUser() {
+    logInfo("Updating user");
+    login(localEmail, localPass);
   }
 }

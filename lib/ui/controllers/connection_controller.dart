@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 
 class ConnectionController extends GetxController {
+
   Connectivity connectivity = Connectivity();
   RxBool connected = false.obs;
 
@@ -14,7 +15,6 @@ class ConnectionController extends GetxController {
     connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       connected.value = result == ConnectivityResult.none ? false: true;
     });
-
     super.onInit();
   }
 

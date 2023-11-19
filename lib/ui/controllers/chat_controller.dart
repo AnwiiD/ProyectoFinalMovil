@@ -18,6 +18,20 @@ class ChatController extends GetxController {
   late StreamSubscription<DatabaseEvent> newEntryStreamSubscription;
   late StreamSubscription<DatabaseEvent> updateEntryStreamSubscription;
 
+  @override
+  onInit() {
+    super.onInit();
+    connectionController.connected.listen((value) {
+      if (value) {
+        logInfo(value);
+        updateMessages();
+        loadMessages();
+      } else {
+        logInfo("switching to local");
+      }
+    });
+  }
+
   // método en el que nos suscribimos  a los dos streams
   void subscribeToUpdated(uidUser) {
     messages.clear();
@@ -56,15 +70,17 @@ class ChatController extends GetxController {
           .child(uidGroup)
           .onChildChanged
           .listen(_onEntryChanged);
-    }else{
+    } else {
       getLocalGroupMessages(uidGroup);
     }
   }
 
   // método en el que cerramos los streams
   void unsubscribe() {
-    newEntryStreamSubscription.cancel();
-    updateEntryStreamSubscription.cancel();
+    if (connectionController.connected.value) {
+      newEntryStreamSubscription.cancel();
+      updateEntryStreamSubscription.cancel();
+    } else {}
   }
 
   // este método es llamado cuando se tiene una nueva entrada
@@ -72,6 +88,7 @@ class ChatController extends GetxController {
     final json = event.snapshot.value as Map<dynamic, dynamic>;
     messages.add(Message.fromJson(event.snapshot, json));
   }
+
   // este método es llamado cuando hay un cambio es un mensaje
   _onEntryChanged(DatabaseEvent event) {
     var oldEntry = messages.singleWhere((entry) {
@@ -126,11 +143,12 @@ class ChatController extends GetxController {
 
     var messageKeys = Hive.box("messages").keys;
     Hive.box("messages").deleteAll(messageKeys);
+
     for (var groupMessages in groupsMessages) {
       for (var groupMessage in groupMessages.children) {
         var message = groupMessage.value as Map<dynamic, dynamic>;
         LocalMessage localMessage = LocalMessage(groupMessages.key,
-            message["msg"], message["senderUid"], message["senderName"]);
+            message["msg"], message["senderUid"], message["senderName"], 1);
         Hive.box("messages").add(localMessage);
       }
     }
@@ -138,14 +156,33 @@ class ChatController extends GetxController {
     for (var chatMessages in chatsMessages) {
       for (var chatMessage in chatMessages.children) {
         var message = chatMessage.value as Map<dynamic, dynamic>;
-        LocalMessage localMessage = LocalMessage(
-            chatMessages.key, message["msg"], message["senderUid"], "noname");
+        LocalMessage localMessage = LocalMessage(chatMessages.key,
+            message["msg"], message["senderUid"], "noname", 1);
         Hive.box("messages").add(localMessage);
       }
     }
   }
 
-  void updateMessages() {}
+  void updateMessages() {
+    logInfo("Updating messages");
+    for (LocalMessage message in Hive.box("messages").values) {
+      if (message.onRemote == 0) {
+        if (message.senderName == "noname") {
+          var users = message.key?.split("--");
+          if (users?[0] == message.senderUid) {
+            sendChat(users?[1], message.msg);
+          } else {
+            sendChat(users?[0], message.msg);
+          }
+        } else {
+          sendGroupChat(
+              message.senderUid, message.key, message.msg, message.senderName);
+        }
+      }
+    }
+    var messageKeys = Hive.box("messages").keys;
+    Hive.box("messages").deleteAll(messageKeys);
+  }
 
   void getLocalMessages(String key) {
     for (LocalMessage message in Hive.box("messages").values) {

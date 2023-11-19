@@ -21,13 +21,14 @@ class LocalMessageAdapter extends TypeAdapter<LocalMessage> {
       fields[1] as String,
       fields[2] as String,
       fields[3] as String,
+      fields[4] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, LocalMessage obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.key)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class LocalMessageAdapter extends TypeAdapter<LocalMessage> {
       ..writeByte(2)
       ..write(obj.senderUid)
       ..writeByte(3)
-      ..write(obj.senderName);
+      ..write(obj.senderName)
+      ..writeByte(4)
+      ..write(obj.onRemote);
   }
 
   @override

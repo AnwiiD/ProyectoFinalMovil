@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
-import '../../data/model/message.dart';
 import '../controllers/authentication_controller.dart';
 import '../controllers/chat_controller.dart';
 
@@ -47,8 +46,8 @@ class _ChatPageState extends State<ChatPage> {
     // Le pedimos al chatController que se suscriba los chats entre los dos usuarios
     if (connectionController.connected.value) {
       chatController.subscribeToUpdated(remoteUserUid);
-    }else{
-      chatController.getLocalMessages(remoteUserUid);
+    } else {
+      chatController.getLocalMessages(chatController.getChatKey(remoteUserUid, authenticationController.getUid()));
     }
   }
 
@@ -58,10 +57,11 @@ class _ChatPageState extends State<ChatPage> {
     _controller.dispose();
     _scrollController.dispose();
     chatController.unsubscribe();
+    chatController.messages.clear();
     super.dispose();
   }
 
-  Widget _item(Message element, int posicion, String uid) {
+  Widget _item(element, int posicion, String uid) {
     return Card(
       margin: const EdgeInsets.all(4.0),
       // cambiamos el color dependiendo de quién mandó el usuario
@@ -99,9 +99,10 @@ class _ChatPageState extends State<ChatPage> {
     if (connectionController.connected.value) {
       await chatController.sendChat(remoteUserUid, text);
     } else {
-      String key = chatController.getChatKey(remoteUserUid, authenticationController.getUid());
-      await Hive.box("messages").add(
-          LocalMessage(key, text, authenticationController.getUid(), "noname"));
+      await Hive.box("messages").add(LocalMessage(
+          chatController.getChatKey(remoteUserUid, authenticationController.getUid()), text, authenticationController.getUid(), "noname", 0));
+      chatController.messages.clear();
+      chatController.getLocalMessages(chatController.getChatKey(remoteUserUid, authenticationController.getUid()));
     }
   }
 

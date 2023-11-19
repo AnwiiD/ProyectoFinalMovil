@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
-import '../../data/model/message.dart';
 import '../controllers/authentication_controller.dart';
 import '../controllers/chat_controller.dart';
 
@@ -59,10 +58,11 @@ class _ChatPageState extends State<ChatGroupPage> {
     _controller.dispose();
     _scrollController.dispose();
     chatController.unsubscribe();
+    chatController.messages.clear();
     super.dispose();
   }
 
-  Widget _item(Message element, int posicion, String uid) {
+  Widget _item(element, int posicion, String uid) {
     return Card(
       margin: const EdgeInsets.all(4.0),
       // cambiamos el color dependiendo de quién mandó el usuario
@@ -108,7 +108,9 @@ class _ChatPageState extends State<ChatGroupPage> {
           authenticationController.name.value);
     } else {
       await Hive.box("messages").add(LocalMessage(remoteGroup, text,
-          remoteUserUid, authenticationController.name.value));
+          remoteUserUid, authenticationController.name.value, 0));
+      chatController.messages.clear();
+      chatController.getLocalGroupMessages(remoteGroup);
     }
   }
 
