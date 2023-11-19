@@ -158,10 +158,9 @@ class _UserListPageState extends State<UserListPage>
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
           appBar: AppBar(
-            backgroundColor:
-                connectionController.connected.value
-                    ? Colors.green
-                    : Colors.red,
+            backgroundColor: connectionController.connected.value
+                ? Colors.green
+                : Colors.red,
             title: Obx(() => Text(
                 'Bienvenido ${authenticationController.name.value} ${getConnectivity()}')),
             actions: [
@@ -177,7 +176,8 @@ class _UserListPageState extends State<UserListPage>
               IconButton(
                 icon: const Icon(Icons.wifi),
                 onPressed: () {
-                  connectionController.connected.value = !connectionController.connected.value;
+                  connectionController.connected.value =
+                      !connectionController.connected.value;
                 },
               ),
             ],
@@ -269,7 +269,16 @@ class _UserListPageState extends State<UserListPage>
     if (tabIndex == 1) {
       return FloatingActionButton(
         onPressed: () {
-          _createGroupDialog(context);
+          if (connectionController.connected.value) {
+            _createGroupDialog(context);
+          } else {
+            Get.snackbar(
+              "Groups error",
+              'Necesitas internet para crear un grupo',
+              icon: const Icon(Icons.person, color: Colors.red),
+              snackPosition: SnackPosition.BOTTOM,
+            );
+          }
         },
         child: const Icon(Icons.add),
       );
