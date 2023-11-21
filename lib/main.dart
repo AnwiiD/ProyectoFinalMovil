@@ -29,6 +29,7 @@ Future<void> main() async {
   // aquí nos conectamos a los servicios de
   // firebase
   await Firebase.initializeApp(
+      name: 'ProyectoFinalMovil',
       options: const FirebaseOptions(
     apiKey: Configuration.apiKey,
     authDomain: Configuration.authDomain,
