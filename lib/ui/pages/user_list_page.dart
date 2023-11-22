@@ -37,7 +37,7 @@ class _UserListPageState extends State<UserListPage>
     // le decimos al userController que se suscriba a los streams
     userController.start();
     groupController.start();
-    authenticationController.getName();
+    authenticationController.getValues();
     super.initState();
     if (connectionController.connected.value) {
       loadCache();

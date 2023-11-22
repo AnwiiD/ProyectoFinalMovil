@@ -14,6 +14,7 @@ class AuthenticationController extends GetxController {
   final databaseReference = FirebaseDatabase.instance.ref();
   ConnectionController connectionController = Get.find();
   RxString name = "".obs;
+  RxString ciudad = "".obs;
   RxString localEmail = "".obs;
   RxString localUid = "".obs;
   RxString localPass = "".obs;
@@ -53,13 +54,11 @@ class AuthenticationController extends GetxController {
       LocatorService locatorService = Get.find();
 
       UserLocation userLocation = await locatorService.getLocation();
-      print(userLocation.latitude);
       // Get the city name using geocoding
       String cityName = await locatorService.getCityName(
         userLocation.latitude,
         userLocation.longitude,
       );
-      print(cityName);
       // primero creamos el usuario en el sistema de autenticación de firebase
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -87,6 +86,7 @@ class AuthenticationController extends GetxController {
         logInfo("logout local");
         isLocal.value = false;
         name.value = "";
+        ciudad.value = "";
         localEmail.value = "";
         localUid.value = "";
         localPass.value = "";
@@ -135,28 +135,29 @@ class AuthenticationController extends GetxController {
     }
   }
 
-  getName() async {
+  getValues() async {
     DataSnapshot ref = await databaseReference.child("userList").get();
     var users = ref.children;
     for (var user in users) {
       var userMap = user.value as Map<dynamic, dynamic>;
       if (userMap["uid"] == getUid()) {
         name.value = userMap["alias"];
+        ciudad.value = userMap["ciudad"];
       }
     }
   }
 
   void loadUser(password) {
     Hive.box("logins")
-        .add(LocalLogin(userEmail(), password, getUid(), name.value));
-    ;
+        .add(LocalLogin(userEmail(), password, getUid(), name.value, ciudad.value));
   }
 
-  void setLocal(String email, String user, String uid, String password) {
+  void setLocal(String email, String user, String uid, String password, String city) {
     localEmail.value = email;
     name.value = user;
     localUid.value = uid;
     localPass.value = password;
+    ciudad.value = city;
     isLocal.value = true;
   }
 
