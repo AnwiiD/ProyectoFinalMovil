@@ -1,4 +1,5 @@
 import 'package:f_chat_template/data/model/user_location.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
@@ -16,7 +17,6 @@ class LocatorService {
   Future<bool> getPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
-
 
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -48,26 +48,33 @@ class LocatorService {
 
     return Future.value(true);
   }
-    Future<String> getCityName(double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
 
-      if (placemarks.isNotEmpty) {
-        return placemarks.first.locality ?? "";
-      } else {
-        return "";
+  Future<String> getCityName(double latitude, double longitude) async {
+    if (!kIsWeb) {
+      try {
+        List<Placemark> placemarks =
+            await placemarkFromCoordinates(latitude, longitude);
+        print(placemarks.first.locality);
+        if (placemarks.isNotEmpty) {
+          return placemarks.first.locality ?? "";
+        } else {
+          return "";
+        }
+      } catch (e) {
+        return Future.error(e.toString());
       }
-    } catch (e) {
-      return Future.error(e.toString());
+    } else {
+      print("hello");
+      return "Barranquilla";
     }
   }
+
   Future<UserLocation> getLocation() async {
     UserLocation userLocation;
     await getPermission();
     try {
       Position l = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high);
+          desiredAccuracy: LocationAccuracy.high);
       userLocation = UserLocation(latitude: l.latitude, longitude: l.longitude);
       return Future.value(userLocation);
     } catch (e) {
