@@ -252,13 +252,11 @@ class _UserListPageState extends State<UserListPage>
                 String inputText = groupNameController.text;
                 LocatorService locatorService = Get.find();
                 UserLocation userLocation = await locatorService.getLocation();
-                print(userLocation.latitude);
                 // Get the city name using geocoding
                 String cityName = await locatorService.getCityName(
                   userLocation.latitude,
                   userLocation.longitude,
                 );
-                print(cityName);
                 var groupid = await groupController.createGroup(inputText,cityName);
                 authenticationController.joinGroup(groupid);
               },

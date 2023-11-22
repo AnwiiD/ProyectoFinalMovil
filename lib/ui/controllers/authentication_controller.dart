@@ -128,7 +128,7 @@ class AuthenticationController extends GetxController {
           .child(group)
           .child('users')
           .child(getUid())
-          .set({'email': userEmail(), 'uid': getUid(), 'name': name.value});
+          .set({'email': userEmail(), 'uid': getUid(), 'name': name.value, 'city':ciudad.value});
     } catch (error) {
       logError(error);
       return Future.error(error);
@@ -142,7 +142,7 @@ class AuthenticationController extends GetxController {
       var userMap = user.value as Map<dynamic, dynamic>;
       if (userMap["uid"] == getUid()) {
         name.value = userMap["alias"];
-        ciudad.value = userMap["ciudad"];
+        ciudad.value = userMap["city"];
       }
     }
   }
@@ -163,6 +163,6 @@ class AuthenticationController extends GetxController {
 
   void updateUser() {
     logInfo("Updating user");
-    login(localEmail, localPass);
+    login(localEmail.value, localPass.value);
   }
 }

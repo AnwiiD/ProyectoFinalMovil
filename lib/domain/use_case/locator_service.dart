@@ -54,7 +54,6 @@ class LocatorService {
       try {
         List<Placemark> placemarks =
             await placemarkFromCoordinates(latitude, longitude);
-        print(placemarks.first.locality);
         if (placemarks.isNotEmpty) {
           return placemarks.first.locality ?? "";
         } else {
@@ -64,7 +63,6 @@ class LocatorService {
         return Future.error(e.toString());
       }
     } else {
-      print("hello");
       return "Barranquilla";
     }
   }
