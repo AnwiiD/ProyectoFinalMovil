@@ -4,20 +4,23 @@ class AppGroup {
   String? key;
   String name;
   String gid;
+  String city;
   Map<String, dynamic> users;
 
-  AppGroup(this.key, this.name, this.gid, this.users);
+  AppGroup(this.key, this.name, this.gid, this.city,this.users);
 
   AppGroup.fromJson(DataSnapshot snapshot, Map<dynamic, dynamic> json)
       : key = snapshot.key ?? "0",
         name = json['name'] ?? "somename",
         gid = json['gid'] ?? "gid",
+        city = json['city'] ?? "city",
         users = json['users'] ?? {};
 
   toJson() {
     return {
       "name": name,
       "gid": gid,
+      "city": city,
       "users": users,
     };
   }

@@ -1,4 +1,6 @@
 import 'package:f_chat_template/data/model/app_group.dart';
+import 'package:f_chat_template/data/model/user_location.dart';
+import 'package:f_chat_template/domain/use_case/locator_service.dart';
 import 'package:f_chat_template/ui/controllers/chat_controller.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/group_controller.dart';
@@ -248,7 +250,16 @@ class _UserListPageState extends State<UserListPage>
               onPressed: () async {
                 Navigator.of(context).pop();
                 String inputText = groupNameController.text;
-                var groupid = await groupController.createGroup(inputText);
+                LocatorService locatorService = Get.find();
+                UserLocation userLocation = await locatorService.getLocation();
+                print(userLocation.latitude);
+                // Get the city name using geocoding
+                String cityName = await locatorService.getCityName(
+                  userLocation.latitude,
+                  userLocation.longitude,
+                );
+                print(cityName);
+                var groupid = await groupController.createGroup(inputText,cityName);
                 authenticationController.joinGroup(groupid);
               },
               child: const Text('Crear Grupo'),

@@ -48,10 +48,10 @@ class AuthenticationController extends GetxController {
   // método usado para crear un usuario
   Future<void> signup(email, password, name) async {
     try {
-      print("what");
+
       // Get the user's location
       LocatorService locatorService = Get.find();
-      print("hey");
+
       UserLocation userLocation = await locatorService.getLocation();
       print(userLocation.latitude);
       // Get the city name using geocoding
