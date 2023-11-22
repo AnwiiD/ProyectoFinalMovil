@@ -138,7 +138,7 @@ class AuthenticationPage extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (connectionController.connected.value) {
+                                    if (!connectionController.connected.value) {
                                       Get.snackbar(
                                         "Sign Up Error",
                                         'Necesita acceder a internet para crear una cuenta',

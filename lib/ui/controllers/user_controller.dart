@@ -65,13 +65,20 @@ class UserController extends GetxController {
   }
 
   // método para crear un nuevo usuario
-  Future<void> createUser(email, uid, name) async {
+  Future<void> createUser(
+    email,
+    uid,
+    name,
+    String cityName,
+  ) async {
     logInfo("Creating user in realTime for $email and $uid");
     try {
-      await databaseRef
-          .child('userList')
-          .push()
-          .set({'email': email, 'uid': uid, 'alias':name});
+      await databaseRef.child('userList').push().set({
+        'email': email,
+        'uid': uid,
+        'alias': name,
+        'city': cityName,
+      });
     } catch (error) {
       logError(error);
       return Future.error(error);
@@ -88,5 +95,4 @@ class UserController extends GetxController {
       }
     }
   }
-
 }

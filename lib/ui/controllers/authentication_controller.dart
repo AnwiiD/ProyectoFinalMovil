@@ -1,4 +1,6 @@
 import 'package:f_chat_template/data/model/local_login.dart';
+import 'package:f_chat_template/data/model/user_location.dart';
+import 'package:f_chat_template/domain/use_case/locator_service.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -18,10 +20,10 @@ class AuthenticationController extends GetxController {
   RxBool isLocal = false.obs;
 
   @override
-  onInit(){
+  onInit() {
     super.onInit();
     connectionController.connected.listen((value) {
-      if(value && localEmail.value != ""){
+      if (value && localEmail.value != "") {
         updateUser();
       }
     });
@@ -46,6 +48,18 @@ class AuthenticationController extends GetxController {
   // método usado para crear un usuario
   Future<void> signup(email, password, name) async {
     try {
+      print("what");
+      // Get the user's location
+      LocatorService locatorService = Get.find();
+      print("hey");
+      UserLocation userLocation = await locatorService.getLocation();
+      print(userLocation.latitude);
+      // Get the city name using geocoding
+      String cityName = await locatorService.getCityName(
+        userLocation.latitude,
+        userLocation.longitude,
+      );
+      print(cityName);
       // primero creamos el usuario en el sistema de autenticación de firebase
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -54,7 +68,8 @@ class AuthenticationController extends GetxController {
 
       // después creamos el usuario en la base de datos de tiempo real usando el
       // userController
-      await userController.createUser(email, userCredential.user!.uid, name);
+      await userController.createUser(
+          email, userCredential.user!.uid, name, cityName);
       return Future.value();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
