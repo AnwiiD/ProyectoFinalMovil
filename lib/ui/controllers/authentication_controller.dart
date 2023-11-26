@@ -1,4 +1,6 @@
 import 'package:f_chat_template/data/model/local_login.dart';
+import 'package:f_chat_template/data/model/user_location.dart';
+import 'package:f_chat_template/domain/use_case/locator_service.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -12,16 +14,17 @@ class AuthenticationController extends GetxController {
   final databaseReference = FirebaseDatabase.instance.ref();
   ConnectionController connectionController = Get.find();
   RxString name = "".obs;
+  RxString ciudad = "".obs;
   RxString localEmail = "".obs;
   RxString localUid = "".obs;
   RxString localPass = "".obs;
   RxBool isLocal = false.obs;
 
   @override
-  onInit(){
+  onInit() {
     super.onInit();
     connectionController.connected.listen((value) {
-      if(value && localEmail.value != ""){
+      if (value && localEmail.value != "") {
         updateUser();
       }
     });
@@ -46,6 +49,16 @@ class AuthenticationController extends GetxController {
   // método usado para crear un usuario
   Future<void> signup(email, password, name) async {
     try {
+
+      // Get the user's location
+      LocatorService locatorService = Get.find();
+
+      UserLocation userLocation = await locatorService.getLocation();
+      // Get the city name using geocoding
+      String cityName = await locatorService.getCityName(
+        userLocation.latitude,
+        userLocation.longitude,
+      );
       // primero creamos el usuario en el sistema de autenticación de firebase
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -54,7 +67,8 @@ class AuthenticationController extends GetxController {
 
       // después creamos el usuario en la base de datos de tiempo real usando el
       // userController
-      await userController.createUser(email, userCredential.user!.uid, name);
+      await userController.createUser(
+          email, userCredential.user!.uid, name, cityName);
       return Future.value();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -72,6 +86,7 @@ class AuthenticationController extends GetxController {
         logInfo("logout local");
         isLocal.value = false;
         name.value = "";
+        ciudad.value = "";
         localEmail.value = "";
         localUid.value = "";
         localPass.value = "";
@@ -113,40 +128,41 @@ class AuthenticationController extends GetxController {
           .child(group)
           .child('users')
           .child(getUid())
-          .set({'email': userEmail(), 'uid': getUid(), 'name': name.value});
+          .set({'email': userEmail(), 'uid': getUid(), 'name': name.value, 'city':ciudad.value});
     } catch (error) {
       logError(error);
       return Future.error(error);
     }
   }
 
-  getName() async {
+  getValues() async {
     DataSnapshot ref = await databaseReference.child("userList").get();
     var users = ref.children;
     for (var user in users) {
       var userMap = user.value as Map<dynamic, dynamic>;
       if (userMap["uid"] == getUid()) {
         name.value = userMap["alias"];
+        ciudad.value = userMap["city"];
       }
     }
   }
 
   void loadUser(password) {
     Hive.box("logins")
-        .add(LocalLogin(userEmail(), password, getUid(), name.value));
-    ;
+        .add(LocalLogin(userEmail(), password, getUid(), name.value, ciudad.value));
   }
 
-  void setLocal(String email, String user, String uid, String password) {
+  void setLocal(String email, String user, String uid, String password, String city) {
     localEmail.value = email;
     name.value = user;
     localUid.value = uid;
     localPass.value = password;
+    ciudad.value = city;
     isLocal.value = true;
   }
 
   void updateUser() {
     logInfo("Updating user");
-    login(localEmail, localPass);
+    login(localEmail.value, localPass.value);
   }
 }

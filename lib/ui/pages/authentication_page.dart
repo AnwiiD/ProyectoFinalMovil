@@ -24,7 +24,7 @@ class AuthenticationPage extends StatelessWidget {
           if (boxuser.email == user && boxuser.password == password) {
             logInfo("user found");
             authenticationController.setLocal(
-                boxuser.email, boxuser.name, boxuser.senderUid, boxuser.password);
+                boxuser.email, boxuser.name, boxuser.senderUid, boxuser.password, boxuser.ciudad);
             break;
           }
         }

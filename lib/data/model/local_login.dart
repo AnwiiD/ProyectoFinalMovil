@@ -12,16 +12,19 @@ class LocalLogin extends HiveObject {
   @HiveField(2)
   String name;
   @HiveField(3)
-  String senderUid; 
+  String senderUid;
+  @HiveField(4)
+  String ciudad;
   
   
-LocalLogin(this.email, this.password, this.senderUid, this.name);
+LocalLogin(this.email, this.password, this.senderUid, this.name, this.ciudad);
 
   toJson() {
     return {
       "name": name,
       "senderUid": senderUid,
-      'email' : email
+      'email' : email,
+      'ciudad':ciudad
     };
   }
 }
