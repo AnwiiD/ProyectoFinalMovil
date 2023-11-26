@@ -1,6 +1,7 @@
 import 'package:f_chat_template/ui/controllers/authentication_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loggy/loggy.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({Key? key}) : super(key: key);
@@ -14,13 +15,11 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-    backgroundColor: Colors.deepPurple[700], // Set the AppBar color here
-    actions: const [
-     
-    ],
-    title: const Text("Chat App - Sign in"),
-  ),
-   backgroundColor: Colors.grey[300],
+          backgroundColor: Colors.deepPurple[700], // Set the AppBar color here
+          actions: const [],
+          title: const Text("Chat App - Sign in"),
+        ),
+        backgroundColor: Colors.grey[300],
         body: SafeArea(
             child: Center(
                 child: Column(
@@ -33,73 +32,67 @@ class SignUpPage extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     decoration: const BoxDecoration(
-                        
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(10))),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextField(
-                           
-                            controller: emailController,
-                           keyboardType: TextInputType.emailAddress,
-                                    decoration: InputDecoration(
-                                      labelText: "Correo Electrónico",
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.white)),
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.black)),
-                                      fillColor: Colors.grey.shade200,
-                                      filled: true,
-                                    )
-                          ),
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                labelText: "Correo Electrónico",
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                                fillColor: Colors.grey.shade200,
+                                filled: true,
+                              )),
                           TextField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                                      labelText: "Nombre de usuario",
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.white)),
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.black)),
-                                      fillColor: Colors.grey.shade200,
-                                      filled: true,
-                                    )
-                          ),
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                labelText: "Nombre de usuario",
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                                fillColor: Colors.grey.shade200,
+                                filled: true,
+                              )),
                           TextField(
-                            controller: passwordController,
-                            keyboardType: TextInputType.number,
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                      labelText: "Contraseña",
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.white)),
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.black)),
-                                      fillColor: Colors.grey.shade200,
-                                      filled: true,
-                                    )
-                          ),
+                              controller: passwordController,
+                              keyboardType: TextInputType.number,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                labelText: "Contraseña",
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                                fillColor: Colors.grey.shade200,
+                                filled: true,
+                              )),
                           TextField(
-                           keyboardType: TextInputType.number,
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                      labelText: "Confirmar contraseña",
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.white)),
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.black)),
-                                      fillColor: Colors.grey.shade200,
-                                      filled: true,
-                                    )
-                          ),
+                              controller: passwordCheckController,
+                              keyboardType: TextInputType.number,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                labelText: "Confirmar contraseña",
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                                fillColor: Colors.grey.shade200,
+                                filled: true,
+                              )),
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
@@ -124,10 +117,13 @@ class SignUpPage extends StatelessWidget {
                               } else {
                                 if (passwordController.text ==
                                     passwordCheckController.text) {
-                                  signup(emailController.text,
+                                  signup(
+                                      emailController.text,
                                       passwordController.text,
                                       nameController.text);
                                 } else {
+                                  logInfo(passwordController.text);
+                                  logInfo(passwordCheckController.text);
                                   Get.snackbar(
                                     "Sign Up Error",
                                     'Las contraseñas no coinciden',
@@ -139,11 +135,10 @@ class SignUpPage extends StatelessWidget {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors
-                                        .deepPurple[700], // Background color
-                                  ),
-                                  
-                                  child: const Text('Iniciar Sesión'),
+                              backgroundColor:
+                                  Colors.deepPurple[700], // Background color
+                            ),
+                            child: const Text('Iniciar Sesión'),
                           ),
                         ]),
                   ),
