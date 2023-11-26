@@ -59,37 +59,45 @@ class _UserListPageState extends State<UserListPage>
   }
 
   Widget _group(AppGroup element) {
-    // Widget usado en la lista de los usuarios
-    // mostramos el correo y uid
-    return Card(
-      elevation: 5.0, // Add elevation for a shadow effect
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0), // Set the border radius
-      ),
-      color: Colors.lightBlueAccent,
-      margin: const EdgeInsets.all(4.0),
-      child: ListTile(
-        onTap: () {
-          if (_userInGroup(element)) {
-            Get.to(const ChatGroupPage(), arguments: [
-              authenticationController.getUid(),
-              element.gid,
-              element.name
-            ]);
-          } else {
-            _joinGroupDialog(context, element);
-          }
-        },
-        title: Text(
-          element.name,
-        ),
-        subtitle: Text(
-          getUsernames(element),
-          style: const TextStyle(fontSize: 20.0),
+  return Card(
+    elevation: 5.0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(0.0),
+      side: const BorderSide(color: Color.fromARGB(255, 129, 101, 234)),
+    ),
+    color: Colors.white,
+    margin: const EdgeInsets.all(0.0),
+    child: ListTile(
+      onTap: () {
+        if (_userInGroup(element)) {
+          Get.to(const ChatGroupPage(), arguments: [
+            authenticationController.getUid(),
+            element.gid,
+            element.name,
+          ]);
+        } else {
+          _joinGroupDialog(context, element);
+        }
+      },
+      title: Text(
+        element.name,
+        style: TextStyle(
+          color: Colors.grey[800],
+          fontWeight: FontWeight.bold,
         ),
       ),
-    );
-  }
+      subtitle: Text(
+        getUsernames(element),
+        style: const TextStyle(
+          color: Color.fromARGB(255, 129, 101, 234),
+          fontSize: 16.0,
+        ),
+      ),
+      leading: Icon(Icons.group, size: 40.0), // Use the group icon
+    ),
+  );
+}
+
 
   Widget _chat(AppUser element) {
     // Widget usado en la lista de los usuarios
@@ -97,11 +105,15 @@ class _UserListPageState extends State<UserListPage>
     return Card(
       elevation: 5.0, // Add elevation for a shadow effect
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0), // Set the border radius
+        borderRadius: BorderRadius.circular(0.0), // Set the border radius
+        side: const BorderSide(color: Color.fromARGB(255, 129, 101, 234)), // Add a border to the card
       ),
-      color: Colors.lightBlueAccent,
-      margin: const EdgeInsets.all(4.0),
+      color: Colors.white, // Change the card color to white
+      margin: const EdgeInsets.all(0.0),
       child: ListTile(
+        leading: Icon(Icons.account_circle, size: 40.0),// Use a random image for testing
+          // backgroundImage: AssetImage('assets/images/user.png'), // Or use an image of your choice
+        
         onTap: () {
           Get.to(() => const ChatPage(), arguments: [
             element.uid,
@@ -110,11 +122,23 @@ class _UserListPageState extends State<UserListPage>
         },
         title: Text(
           element.name,
+          style: TextStyle( // Change the text style
+            color: Colors.grey[800],
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        subtitle: Text(element.email),
+        subtitle: Text(element.email,
+          style: const TextStyle( // Change the text style
+            color: Color.fromARGB(255, 129, 101, 234),
+          ),
+        ),
       ),
     );
   }
+
+
+
+
 
   Widget chatList() {
     // Un widget con La lista de los usuarios con una validación para cuándo la misma este vacia
@@ -159,8 +183,8 @@ class _UserListPageState extends State<UserListPage>
     return Obx(() => Scaffold(
           appBar: AppBar(
             backgroundColor: connectionController.connected.value
-                ? Colors.green
-                : Colors.red,
+                ? Colors.deepPurple[700]
+                : Colors.deepPurple[700],
             title: Obx(() => Text(
                 'Bienvenido ${authenticationController.name.value} ${getConnectivity()}')),
             actions: [
@@ -174,12 +198,16 @@ class _UserListPageState extends State<UserListPage>
                 ),
               ]),
               IconButton(
-                icon: const Icon(Icons.wifi),
-                onPressed: () {
-                  connectionController.connected.value =
-                      !connectionController.connected.value;
-                },
-              ),
+  icon: Icon(
+    connectionController.connected.value
+        ? Icons.wifi
+        : Icons.wifi_off,
+  ),
+  onPressed: () {
+    connectionController.connected.value =
+        !connectionController.connected.value;
+  },
+),
             ],
             bottom: TabBar(
               controller: _tabController,
@@ -280,7 +308,9 @@ class _UserListPageState extends State<UserListPage>
             );
           }
         },
-        child: const Icon(Icons.add),
+        backgroundColor: const Color.fromARGB(255, 129, 101, 234), // Set the purple background color
+  child: Icon(Icons.add),
+      
       );
     } else {
       return Container();

@@ -7,7 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
 import '../controllers/authentication_controller.dart';
 import '../controllers/chat_controller.dart';
-
+import 'package:f_chat_template/ui/componentes/GroupChatBubble.dart';
 // Widget con la interfaz del chat
 class ChatGroupPage extends StatefulWidget {
   const ChatGroupPage({Key? key}) : super(key: key);
@@ -63,26 +63,14 @@ class _ChatPageState extends State<ChatGroupPage> {
   }
 
   Widget _item(element, int posicion, String uid) {
-    return Card(
-      margin: const EdgeInsets.all(4.0),
-      // cambiamos el color dependiendo de quién mandó el usuario
-      color: uid == element.senderUid ? Colors.yellow[200] : Colors.grey[300],
-      child: ListTile(
-        title: Text(
-          element.senderName,
-          style: TextStyle(fontSize: 15.0, color: Colors.blue[900]),
-          textAlign:
-              uid == element.senderUid ? TextAlign.right : TextAlign.left,
-        ),
-        subtitle: Text(
-          element.msg,
-          style: const TextStyle(fontSize: 20.0),
-          textAlign:
-              uid == element.senderUid ? TextAlign.right : TextAlign.left,
-        ),
-      ),
-    );
-  }
+  return GroupChatBubble(
+    
+    senderName: element.senderName,
+    message: element.msg,
+    isCurrentUser: uid == element.senderUid,
+  );
+}
+
 
   Widget _list() {
     String uid = authenticationController.getUid();
@@ -115,36 +103,67 @@ class _ChatPageState extends State<ChatGroupPage> {
   }
 
   Widget _textInput() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: Container(
-            margin: const EdgeInsets.only(left: 5.0, top: 5.0),
-            child: TextField(
-              key: const Key('MsgTextField'),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Your message',
+  return Row(
+    children: [
+      Expanded(
+        flex: 3,
+        child: Container(
+          margin: const EdgeInsets.only(left: 5.0, top: 5.0),
+          child: TextField(
+            key: const Key('MsgTextField'),
+            decoration: InputDecoration(
+              labelText: 'Your message',
+              labelStyle: const TextStyle(
+                color: Color.fromARGB(255, 202, 196, 196),
               ),
-              onSubmitted: (value) {
-                _sendGroupMsg(_controller.text);
-                _controller.clear();
-              },
-              controller: _controller,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40.0),
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 202, 196, 196),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40.0),
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 227, 225, 225),
+                ),
+              ),
+              fillColor: const Color.fromARGB(255, 255, 255, 255),
+              filled: true,
+            ),
+            onSubmitted: (value) {
+              _sendGroupMsg(_controller.text);
+              _controller.clear();
+            },
+            controller: _controller,
+          ),
+        ),
+      ),
+      Container(
+        margin: const EdgeInsets.only(right: 5.0),
+        child: ElevatedButton(
+          key: const Key('sendButton'),
+          onPressed: () {
+            _sendGroupMsg(_controller.text);
+            _controller.clear();
+          },
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: const Color.fromARGB(255, 129, 101, 234),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(13.0),
+            child: Icon(
+              Icons.send,
+              color: Colors.white,
             ),
           ),
         ),
-        TextButton(
-            key: const Key('sendButton'),
-            child: const Text('Send'),
-            onPressed: () {
-              _sendGroupMsg(_controller.text);
-              _controller.clear();
-            })
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 
   _scrollToEnd() async {
     _scrollController.animateTo(_scrollController.position.maxScrollExtent,
@@ -155,7 +174,8 @@ class _ChatPageState extends State<ChatGroupPage> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
     return Scaffold(
-        appBar: AppBar(title: Text("Chat in $remoteGroupName")),
+        appBar: AppBar(title: Text("Chat in $remoteGroupName"),backgroundColor: Colors.deepPurple[700],),
+        backgroundColor: Colors.grey[100],
         body: Padding(
           padding: const EdgeInsets.fromLTRB(2.0, 2.0, 2.0, 25.0),
           child: Column(

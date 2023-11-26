@@ -1,4 +1,5 @@
 import 'package:f_chat_template/data/model/local_message.dart';
+import 'package:f_chat_template/ui/componentes/ChatBubble.dart';
 import 'package:f_chat_template/ui/controllers/connection_controller.dart';
 import 'package:f_chat_template/ui/controllers/location_controller.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
 import '../controllers/authentication_controller.dart';
 import '../controllers/chat_controller.dart';
+
+
 
 // Widget con la interfaz del chat
 class ChatPage extends StatefulWidget {
@@ -47,7 +50,8 @@ class _ChatPageState extends State<ChatPage> {
     if (connectionController.connected.value) {
       chatController.subscribeToUpdated(remoteUserUid);
     } else {
-      chatController.getLocalMessages(chatController.getChatKey(remoteUserUid, authenticationController.getUid()));
+      chatController.getLocalMessages(chatController.getChatKey(
+          remoteUserUid, authenticationController.getUid()));
     }
   }
 
@@ -62,20 +66,12 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _item(element, int posicion, String uid) {
-    return Card(
-      margin: const EdgeInsets.all(4.0),
-      // cambiamos el color dependiendo de quién mandó el usuario
-      color: uid == element.senderUid ? Colors.yellow[200] : Colors.grey[300],
-      child: ListTile(
-        title: Text(
-          element.msg,
-          textAlign:
-              // cambiamos el textAlign dependiendo de quién mandó el usuario
-              uid == element.senderUid ? TextAlign.right : TextAlign.left,
-        ),
-      ),
-    );
-  }
+  return ChatBubble(
+    message: element.msg,
+    senderUid: element.senderUid,
+    isCurrentUser: uid == element.senderUid,
+  );
+}
 
   Widget _list() {
     String uid = authenticationController.getUid();
@@ -100,43 +96,81 @@ class _ChatPageState extends State<ChatPage> {
       await chatController.sendChat(remoteUserUid, text);
     } else {
       await Hive.box("messages").add(LocalMessage(
-          chatController.getChatKey(remoteUserUid, authenticationController.getUid()), text, authenticationController.getUid(), "noname", 0));
+          chatController.getChatKey(
+              remoteUserUid, authenticationController.getUid()),
+          text,
+          authenticationController.getUid(),
+          "noname",
+          0));
       chatController.messages.clear();
-      chatController.getLocalMessages(chatController.getChatKey(remoteUserUid, authenticationController.getUid()));
+      chatController.getLocalMessages(chatController.getChatKey(
+          remoteUserUid, authenticationController.getUid()));
     }
   }
 
   Widget _textInput() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: Container(
-            margin: const EdgeInsets.only(left: 5.0, top: 5.0),
-            child: TextField(
-              key: const Key('MsgTextField'),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Your message',
+  return Row(
+    children: [
+      Expanded(
+        flex: 3,
+        child: Container(
+          margin: const EdgeInsets.only(left: 5.0, top: 5.0),
+          child: TextField(
+            key: const Key('MsgTextField'),
+            decoration: InputDecoration(
+              labelText: 'Your message',
+              labelStyle: const TextStyle(
+                color: Color.fromARGB(255, 202, 196, 196),
               ),
-              onSubmitted: (value) {
-                _sendMsg(_controller.text);
-                _controller.clear();
-              },
-              controller: _controller,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40.0),
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 202, 196, 196),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40.0),
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 227, 225, 225),
+                ),
+              ),
+              fillColor: const Color.fromARGB(255, 255, 255, 255),
+              filled: true,
+            ),
+            onSubmitted: (value) {
+              _sendMsg(_controller.text);
+              _controller.clear();
+            },
+            controller: _controller,
+            style: TextStyle(color: Colors.black), // Set text color
+          ),
+        ),
+      ),
+      Container(
+        margin: const EdgeInsets.only(right: 5.0),
+        child: ElevatedButton(
+          key: const Key('sendButton'),
+          onPressed: () {
+            _sendMsg(_controller.text);
+            _controller.clear();
+          },
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: const Color.fromARGB(255, 129, 101, 234),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(13.0),
+            child: Icon(
+              Icons.send,
+              color: Colors.white,
             ),
           ),
         ),
-        TextButton(
-            key: const Key('sendButton'),
-            child: const Text('Send'),
-            onPressed: () {
-              _sendMsg(_controller.text);
-              _controller.clear();
-            })
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 
   _scrollToEnd() async {
     _scrollController.animateTo(_scrollController.position.maxScrollExtent,
@@ -147,7 +181,9 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
     return Scaffold(
-        appBar: AppBar(title: Text("Chat with $remoteEmail")),
+        appBar: AppBar(title: Text("Chat with $remoteEmail"),backgroundColor: Colors.deepPurple[700],),
+                backgroundColor: Colors.grey[100],
+
         body: Padding(
           padding: const EdgeInsets.fromLTRB(2.0, 2.0, 2.0, 25.0),
           child: Column(

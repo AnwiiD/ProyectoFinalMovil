@@ -15,7 +15,7 @@ class AuthenticationPage extends StatelessWidget {
   final AuthenticationController authenticationController = Get.find();
   final ConnectionController connectionController = Get.find();
 
-  void login(String user, String password) async {
+   void login(String user, String password) async {
     try {
       if (!connectionController.connected.value) {
         logInfo("local login");
@@ -50,7 +50,6 @@ class AuthenticationPage extends StatelessWidget {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final TextEditingController emailController =
@@ -58,87 +57,123 @@ class AuthenticationPage extends StatelessWidget {
     final TextEditingController passwordController =
         TextEditingController(text: '123456');
     return Scaffold(
-      appBar: AppBar(actions: [
-        IconButton(
+  appBar: AppBar(
+    backgroundColor: Colors.deepPurple[700], // Set the AppBar color here
+    actions: [
+     IconButton(
           icon: const Icon(Icons.wifi),
           onPressed: () {
            connectionController.connected.value = !connectionController.connected.value;
           },
         ),
-      ], title: const Text("Chat App - Login")),
-      body: SafeArea(
+    ],
+    title: const Text("Chat App - Login"),
+  ),
+  backgroundColor: Colors.grey[300], // Set the background color of the entire Scaffold
+  body: Container(
+        padding: const EdgeInsets.all(1),
         child: Center(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const SizedBox(height: 20),
+                const Icon(Icons.chat_outlined, size: 100),
+                
+                const SizedBox(
+                  height: 10,
+                ),
                 Expanded(
                   flex: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Container(
+                    child: SizedBox(
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.blue.shade100,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10))),
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.all(2.0),
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
+                                TextFormField(
+                                    controller: emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: InputDecoration(
+                                      labelText: "Correo Electrónico",
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black)),
+                                      fillColor: Colors.grey.shade200,
+                                      filled: true,
+                                    )),
+                                const SizedBox(height: 40),
                                 TextField(
-                                  controller: emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Correo Electrónico'),
+                                    controller: passwordController,
+                                    keyboardType: TextInputType.number,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                      labelText: "Contraseña",
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black)),
+                                      fillColor: Colors.grey.shade200,
+                                      filled: true,
+                                    )),
+                                const SizedBox(height: 28,),
+                                Container(
+  width: 120.0,
+  decoration: const BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(40))),
+  height: 40.0, 
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.deepPurple[700], // color de fondo
+      
+    ),
+    onPressed: () {
+      login(emailController.text, passwordController.text);
+    },
+    child: const Text('Iniciar Sesión'),
+  ),
+),
+                                Obx(
+                                  () => connectionController.connected.value
+                                      ? const Icon(
+                                          Icons.wifi,
+                                          size: 40.0,
+                                          color: Colors
+                                              .green, // Customize the color as needed
+                                        )
+                                      : const Icon(
+                                          Icons
+                                              .signal_wifi_connected_no_internet_4_rounded,
+                                          size: 40.0,
+                                          color: Colors
+                                              .red, // Customize the color as needed
+                                        ),
                                 ),
-                                const SizedBox(height: 20),
-                                TextField(
-                                  controller: passwordController,
-                                  keyboardType: TextInputType.number,
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Contraseña'),
-                                ),
-                                const SizedBox(height: 20),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    login(emailController.text,
-                                        passwordController.text);
-                                  },
-                                  child: const Text('Iniciar Sesión'),
-                                ),
-                                Obx(() => Text(
-                                      connectionController.connected.value
-                                          ?"Connected to Internet" 
-                                          : "No Connection",
-                                    ))
                               ]),
                         )),
                   ),
                 ),
                 Expanded(
                     child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(15.0),
                         child: Container(
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Colors.blue.shade100,
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(10))),
+                            decoration: const BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                const Text(
-                                  '¿Aún no tienes una cuenta? Registrate aquí',
-                                  style: TextStyle(
-                                      color: Colors.blueAccent,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 30),
-                                ),
-                                ElevatedButton(
+                                TextButton(
                                   onPressed: () {
-                                    if (connectionController.connected.value) {
+                                    if (!connectionController.connected.value) {
                                       Get.snackbar(
                                         "Sign Up Error",
                                         'Necesita acceder a internet para crear una cuenta',
@@ -150,8 +185,22 @@ class AuthenticationPage extends StatelessWidget {
                                       Get.to(() => SignUpPage());
                                     }
                                   },
-                                  child: const Text('Crear Cuenta'),
-                                ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "No tienes una cuenta?",
+                                        style:
+                                            TextStyle(color: Colors.grey[700]),
+                                      ),
+                                      Text(
+                                        " Regístrate",
+                                        style: TextStyle(
+                                            color: Colors.deepPurple[700]),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ))))
               ]),
