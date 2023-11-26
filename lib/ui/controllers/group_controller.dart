@@ -59,11 +59,11 @@ class GroupController extends GetxController {
   }
 
   // método para crear un nuevo usuario
-  Future createGroup(name) async {
+  Future createGroup(name,cityname) async {
     logInfo("Creating group in realTime for $name");
     try {
       DatabaseReference gid = databaseRef.child('groupList').push();
-      await gid.set({'name': name, 'gid': gid.key});
+      await gid.set({'name': name, 'gid': gid.key,'cityname':cityname});
       return Future.value(gid.key);
     } catch (error) {
       logError(error);

@@ -24,7 +24,7 @@ class AuthenticationPage extends StatelessWidget {
           if (boxuser.email == user && boxuser.password == password) {
             logInfo("user found");
             authenticationController.setLocal(
-                boxuser.email, boxuser.name, boxuser.senderUid, boxuser.password);
+                boxuser.email, boxuser.name, boxuser.senderUid, boxuser.password, boxuser.ciudad);
             break;
           }
         }
@@ -138,7 +138,7 @@ class AuthenticationPage extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (connectionController.connected.value) {
+                                    if (!connectionController.connected.value) {
                                       Get.snackbar(
                                         "Sign Up Error",
                                         'Necesita acceder a internet para crear una cuenta',
