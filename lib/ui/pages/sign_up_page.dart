@@ -13,7 +13,14 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Chat App - Sign Up")),
+        appBar: AppBar(
+    backgroundColor: Colors.deepPurple[700], // Set the AppBar color here
+    actions: const [
+     
+    ],
+    title: const Text("Chat App - Sign in"),
+  ),
+   backgroundColor: Colors.grey[300],
         body: SafeArea(
             child: Center(
                 child: Column(
@@ -25,35 +32,73 @@ class SignUpPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
+                    decoration: const BoxDecoration(
+                        
                         borderRadius:
-                            const BorderRadius.all(Radius.circular(10))),
+                            BorderRadius.all(Radius.circular(10))),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextField(
+                           
                             controller: emailController,
-                            decoration: const InputDecoration(
-                                labelText: 'Correo Electrónico'),
+                           keyboardType: TextInputType.emailAddress,
+                                    decoration: InputDecoration(
+                                      labelText: "Correo Electrónico",
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black)),
+                                      fillColor: Colors.grey.shade200,
+                                      filled: true,
+                                    )
                           ),
                           TextField(
                             controller: nameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Nombre de usuario'),
+                            decoration: InputDecoration(
+                                      labelText: "Nombre de usuario",
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black)),
+                                      fillColor: Colors.grey.shade200,
+                                      filled: true,
+                                    )
                           ),
                           TextField(
                             controller: passwordController,
                             keyboardType: TextInputType.number,
-                            obscureText: true,
-                            decoration:
-                                const InputDecoration(labelText: 'Contraseña'),
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                      labelText: "Contraseña",
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black)),
+                                      fillColor: Colors.grey.shade200,
+                                      filled: true,
+                                    )
                           ),
                           TextField(
-                            controller: passwordCheckController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                                labelText: 'Confirmar contraseña'),
+                           keyboardType: TextInputType.number,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                      labelText: "Confirmar contraseña",
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black)),
+                                      fillColor: Colors.grey.shade200,
+                                      filled: true,
+                                    )
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
@@ -93,7 +138,12 @@ class SignUpPage extends StatelessWidget {
                                 }
                               }
                             },
-                            child: const Text('Crear Cuenta'),
+                            style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors
+                                        .deepPurple[700], // Background color
+                                  ),
+                                  
+                                  child: const Text('Iniciar Sesión'),
                           ),
                         ]),
                   ),
